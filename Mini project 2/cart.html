@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart | AURA WEAR Designer Selections</title>
+  <meta name="description" content="View items in your shopping cart. Modify sizes and quantities. Apply discount codes and estimate delivery taxes.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- MAIN CART PAGE LAYOUT -->
+  <main class="container section-padding">
+    <!-- EMPTY VIEW -->
+    <div id="cartEmptyView" style="display:none; text-align:center; padding: 6rem 0;">
+      <i class="fa-solid fa-bag-shopping" style="font-size:4rem; color:var(--gray-200); margin-bottom:2rem;"></i>
+      <h2 style="font-size:2rem; margin-bottom:1rem;">YOUR SHOPPING BAG IS EMPTY</h2>
+      <p style="color:var(--gray-500); margin-bottom:2.5rem; font-size:1.05rem;">Looks like you haven't made your designer selections yet.</p>
+      <a href="shop.html" class="btn btn-primary">RETURN TO SHOPPING</a>
+    </div>
+
+    <!-- ACTIVE VIEW -->
+    <div class="cart-layout" id="cartLayout">
+      <!-- Left Column: Items Table -->
+      <div class="cart-table-card">
+        <h2>SHOPPING BAG</h2>
+        
+        <!-- Shipping Goal meter -->
+        <div class="shipping-goal-container">
+          <div class="shipping-goal-text" id="shippingGoalText">Spend <span>$0.00</span> more to unlock <span>FREE SHIPPING</span></div>
+          <div class="shipping-goal-bar">
+            <div class="shipping-goal-progress" id="shippingGoalProgress"></div>
+          </div>
+        </div>
+
+        <!-- Table headers -->
+        <div class="cart-table-row cart-table-header">
+          <div>PRODUCT</div>
+          <div>PRICE</div>
+          <div>QUANTITY</div>
+          <div>SUBTOTAL</div>
+          <div></div>
+        </div>
+
+        <!-- Table Rows dynamically drawn -->
+        <div id="cartPageTableBody">
+          <!-- Populated by script.js -->
+        </div>
+      </div>
+
+      <!-- Right Column: Summary Panel -->
+      <div class="order-summary-card">
+        <h3>ORDER SUMMARY</h3>
+        
+        <div class="summary-row">
+          <span>Bag Subtotal</span>
+          <span id="summarySubtotal">$0.00</span>
+        </div>
+        <div class="summary-row" id="summaryDiscountRow" style="display:none; color: var(--success); font-weight: 600;">
+          <span>Promotional Discount</span>
+          <span id="summaryDiscountVal">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated Shipping</span>
+          <span id="summaryShipping">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated Sales Tax (8%)</span>
+          <span id="summaryTax">$0.00</span>
+        </div>
+        
+        <div class="summary-row total-row">
+          <span>EST. TOTAL</span>
+          <span id="summaryTotal">$0.00</span>
+        </div>
+
+        <!-- Promo Form -->
+        <div class="promo-apply-group">
+          <input type="text" id="promoInput" placeholder="PROMO CODE..." autocomplete="off">
+          <button id="applyPromoBtn">APPLY</button>
+        </div>
+        <div class="promo-applied-badge" id="promoAppliedBadge">
+          <!-- Code applied display -->
+        </div>
+
+        <a href="checkout.html" class="btn btn-primary" style="width:100%; margin-top:2.5rem;">CONTINUE TO CHECKOUT <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

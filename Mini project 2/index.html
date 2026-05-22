@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA WEAR | Haute Couture & Modern Essentials</title>
+  <meta name="description" content="AURA WEAR - Discover high-end fashion, organic minimalist collections, and luxury streetwear essentials. Free shipping over $150 and 30-day returns.">
+  
+  <!-- Font Awesome for sleek modern vector icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link active">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="admin.html" class="nav-link" style="color:var(--accent);">Admin</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle" title="Search catalog">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </a>
+        <a href="profile.html" class="action-btn" title="Favorites / Wishlist">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle" title="Shopping Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn" title="My Account">
+          <i class="fa-solid fa-user"></i>
+        </a>
+        <div class="menu-toggle" id="menuToggle">
+          <i class="fa-solid fa-bars"></i>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch">
+      <i class="fa-solid fa-xmark"></i>
+    </div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart">
+        <i class="fa-solid fa-xmark"></i>
+      </div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems">
+      <!-- Dynamically filled by script.js -->
+    </div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- HERO SLIDER SECTION -->
+  <header class="hero-slider">
+    <!-- Slide 1 -->
+    <div class="slide active" style="background-image: url('assets/fashion_hero_banner.png');">
+      <div class="slide-overlay"></div>
+      <div class="container">
+        <div class="slide-content">
+          <span class="slide-tag">New Season Collection</span>
+          <h1>ELEVATED MODERN ESSENTIALS</h1>
+          <a href="shop.html" class="btn btn-accent">EXPLORE CATALOG <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+    <!-- Slide 2 -->
+    <div class="slide" style="background-image: url('assets/fashion_hero_banner.png'); filter: saturate(1.2) hue-rotate(-20deg);">
+      <div class="slide-overlay"></div>
+      <div class="container">
+        <div class="slide-content">
+          <span class="slide-tag">Exclusive Release</span>
+          <h1>SEASONAL REDEFINED HAUTE COUTURE</h1>
+          <a href="shop.html" class="btn btn-accent">SHOP COLLECTIONS <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="slider-controls">
+      <div class="slider-arrow" id="prevSlide"><i class="fa-solid fa-chevron-left"></i></div>
+      <div class="slider-arrow" id="nextSlide"><i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- COLLECTIONS GRID -->
+    <section class="section-padding container">
+      <div class="section-header">
+        <h2>SHOP BY CATEGORIES</h2>
+        <p>Explore our carefully curated design concepts and aesthetic fabric selections</p>
+      </div>
+      
+      <div class="promo-cards">
+        <!-- Card 1 -->
+        <a href="shop.html" class="promo-card">
+          <img class="promo-img" src="assets/product_tshirt.png" alt="Women's Collection">
+          <div class="promo-content">
+            <h3>WOMEN</h3>
+            <span>Discover Outfits <i class="fa-solid fa-arrow-right-long"></i></span>
+          </div>
+        </a>
+        <!-- Card 2 -->
+        <a href="shop.html" class="promo-card">
+          <img class="promo-img" src="assets/product_hoodie.png" alt="Men's Collection">
+          <div class="promo-content">
+            <h3>MEN</h3>
+            <span>Discover Outfits <i class="fa-solid fa-arrow-right-long"></i></span>
+          </div>
+        </a>
+        <!-- Card 3 -->
+        <a href="shop.html" class="promo-card">
+          <img class="promo-img" src="assets/product_bag.png" alt="Accessories Collection">
+          <div class="promo-content">
+            <h3>ACCESSORIES</h3>
+            <span>Discover Pieces <i class="fa-solid fa-arrow-right-long"></i></span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- TRENDING NOW SHOWCASE -->
+    <section class="section-padding" style="background-color: var(--surface-muted);">
+      <div class="container">
+        <div class="section-header">
+          <h2>TRENDING NOW</h2>
+          <p>The most sought-after signature pieces in our global community right now</p>
+        </div>
+        
+        <div class="grid-4" id="trendingGrid">
+          <!-- Dynamically populated by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS SECTION -->
+    <section class="benefits-bar">
+      <div class="container grid-3">
+        <!-- Benefit 1 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-truck-fast"></i>
+          </div>
+          <h3>COMPLIMENTARY SHIPPING</h3>
+          <p>Automatic free premium express courier delivery on orders exceeding $150</p>
+        </div>
+        <!-- Benefit 2 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </div>
+          <h3>EASY RETURNING</h3>
+          <p>Worry-free returns inside a 30-day window on all standard purchases</p>
+        </div>
+        <!-- Benefit 3 -->
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3>SECURED CHECKOUT</h3>
+          <p>Fully compliant SSL 256-bit dynamic encryption safeguarding private data</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER SUB PANEL -->
+    <section class="section-padding newsletter-banner">
+      <div class="container">
+        <div class="newsletter-box">
+          <h2>AURA CLUB SUBSCRIPTION</h2>
+          <p>Unlock premium access. Register to enjoy a 10% welcome discount, private sale invitations, and seasonal aesthetic lookbooks.</p>
+          <form class="newsletter-input-group" id="homeNewsletterForm">
+            <input type="email" placeholder="Enter your email address..." required autocomplete="off">
+            <button type="submit">JOIN NOW</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

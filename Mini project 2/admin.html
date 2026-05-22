@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | AURA WEAR</title>
+  <meta name="description" content="AURA WEAR Admin Control Panel - manage products, analytics, and orders.">
+
+  <!-- React 18 via CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            body:    ['Inter',  'sans-serif'],
+          },
+          colors: {
+            accent:        '#d46a43',
+            'accent-dark': '#b8522d',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; margin: 0; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #d46a43; border-radius: 3px; }
+
+    /* Fade-in animation */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp 0.4s ease both; }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .slide-in { animation: slideInRight 0.35s ease both; }
+
+    /* Custom range slider */
+    input[type=range] { accent-color: #d46a43; }
+
+    /* Line clamp */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #d46a43, #dfa124);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    /* ============================================
+       CONSTANTS
+    ============================================ */
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'admin123';
+
+    const CATEGORIES = ['Suits','Clothes','Shoes','Watches','Perfume','Hats','Sunglasses','Hair Products'];
+    const COLORS     = ['charcoal','cream','sage','tan','gold','terracotta'];
+    const SIZES      = ['XS','S','M','L','XL','6','7','8','9','10','11','12','OS'];
+
+    const ICON_OPTIONS = [
+      { icon: '🕴️', label: 'Suit' },
+      { icon: '👔', label: 'Clothes' },
+      { icon: '👞', label: 'Shoes' },
+      { icon: '⌚', label: 'Watch' },
+      { icon: '🧴', label: 'Perfume' },
+      { icon: '🎩', label: 'Hat' },
+      { icon: '🕶️', label: 'Sunglasses' },
+      { icon: '💆', label: 'Hair' },
+      { icon: '👜', label: 'Bag' },
+      { icon: '💄', label: 'Makeup' },
+      { icon: '✨', label: 'Luxury' },
+      { icon: '🧣', label: 'Scarf' },
+    ];
+
+    const GRADIENTS = [
+      'linear-gradient(135deg,#2d2a26,#4a4540)',
+      'linear-gradient(135deg,#cda885,#e8d5bc)',
+      'linear-gradient(135deg,#1a1614,#3d322b)',
+      'linear-gradient(135deg,#b8860b,#dfa124)',
+      'linear-gradient(135deg,#d46a43,#f0a882)',
+      'linear-gradient(135deg,#4a3b1a,#dfa124)',
+      'linear-gradient(135deg,#c17f3e,#e8b87a)',
+      'linear-gradient(135deg,#8fa89b,#c5d5d0)',
+    ];
+
+    const DEFAULT_PRODUCTS = [
+      { id:1, title:'Tailored Slim-Fit Suit',         category:'Suits',         price:320, originalPrice:420, rating:4.9, reviews:187, color:'charcoal',  size:'L',   popularity:97, icon:'🕴️', iconBg:'linear-gradient(135deg,#2d2a26,#4a4540)', description:'An impeccably tailored slim-fit suit in premium Italian wool-blend. Features a two-button single-breasted jacket, flat-front trousers, and a structured notched lapel.' },
+      { id:2, title:'Structured Linen Blazer',        category:'Clothes',       price:135, rating:4.7,          reviews:214, color:'tan',       size:'M',   popularity:91, icon:'👔', iconBg:'linear-gradient(135deg,#cda885,#e8d5bc)', description:'A refined relaxed linen blazer with a deconstructed, unlined interior for breathable warm-weather styling.' },
+      { id:3, title:'Oxford Derby Leather Shoes',     category:'Shoes',         price:210, originalPrice:265, rating:4.8, reviews:156, color:'charcoal',  size:'10',  popularity:94, icon:'👞', iconBg:'linear-gradient(135deg,#1a1614,#3d322b)', description:'Handcrafted from full-grain calf leather with Goodyear-welt construction. Almond toe, leather sole, mirror-polish finish.' },
+      { id:4, title:'Precision Swiss Timepiece',      category:'Watches',       price:495, rating:5.0,          reviews:89,  color:'gold',      size:'OS',  popularity:99, icon:'⌚', iconBg:'linear-gradient(135deg,#b8860b,#dfa124)', description:'Swiss-movement luxury dress watch in a 40mm stainless steel case with sapphire crystal glass.' },
+      { id:5, title:'Signature Eau de Parfum',        category:'Perfume',       price:95,  rating:4.8,          reviews:302, color:'terracotta',size:'OS',  popularity:96, icon:'🧴', iconBg:'linear-gradient(135deg,#d46a43,#f0a882)', description:'Sophisticated unisex fragrance: bergamot and mandarin top notes; cedarwood, leather, and vetiver heart.' },
+      { id:6, title:'Wide-Brim Wool Fedora Hat',      category:'Hats',          price:75,  originalPrice:95,  rating:4.6, reviews:128, color:'charcoal',  size:'OS',  popularity:85, icon:'🎩', iconBg:'linear-gradient(135deg,#2d2a26,#5c5450)', description:'Classic wide-brim fedora made from 100% pressed wool felt with a grosgrain ribbon band.' },
+      { id:7, title:'Polarized Aviator Sunglasses',   category:'Sunglasses',    price:145, rating:4.9,          reviews:243, color:'gold',      size:'OS',  popularity:98, icon:'🕶️', iconBg:'linear-gradient(135deg,#4a3b1a,#dfa124)', description:'Titanium-framed polarized aviators with UV400 protection. Lightweight at 18g with spring hinges.' },
+      { id:8, title:'Argan Oil Hair Elixir Set',      category:'Hair Products', price:68,  rating:4.7,          reviews:375, color:'terracotta',size:'OS',  popularity:90, icon:'💆', iconBg:'linear-gradient(135deg,#c17f3e,#e8b87a)', description:'Premium 3-piece hair care ritual: cold-pressed Moroccan argan oil serum, volumizing shampoo, and deep-conditioning mask.' },
+    ];
+
+    /* ============================================
+       LOCAL STORAGE HELPERS
+    ============================================ */
+    function dbGetProducts() {
+      try {
+        const raw = localStorage.getItem('aura_admin_products');
+        if (raw) return JSON.parse(raw);
+        localStorage.setItem('aura_admin_products', JSON.stringify(DEFAULT_PRODUCTS));
+        return DEFAULT_PRODUCTS;
+      } catch { return DEFAULT_PRODUCTS; }
+    }
+    function dbSaveProducts(list) {
+      localStorage.setItem('aura_admin_products', JSON.stringify(list));
+    }
+    function isLoggedIn() { return sessionStorage.getItem('aura_admin_auth') === '1'; }
+    function genId()      { return Date.now() + Math.floor(Math.random() * 1000); }
+
+    /* ============================================
+       TOAST COMPONENT
+    ============================================ */
+    function Toast({ toasts, remove }) {
+      return (
+        <div className="fixed bottom-6 right-6 z-[9999] flex flex-col gap-2 pointer-events-none">
+          {toasts.map(t => (
+            <div key={t.id} className={`slide-in flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-white text-sm font-semibold min-w-[260px] pointer-events-auto
+              ${t.type==='success'?'bg-emerald-600':t.type==='error'?'bg-red-600':'bg-gray-800'}`}>
+              <i className={`fas ${t.type==='success'?'fa-check-circle':t.type==='error'?'fa-times-circle':'fa-info-circle'}`}></i>
+              <span className="flex-1">{t.message}</span>
+              <button className="opacity-60 hover:opacity-100" onClick={()=>remove(t.id)}><i className="fas fa-times text-xs"></i></button>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function useToast() {
+      const [toasts, setToasts] = useState([]);
+      const add = useCallback((message, type='success') => {
+        const id = genId();
+        setToasts(p => [...p, { id, message, type }]);
+        setTimeout(() => setToasts(p => p.filter(t=>t.id!==id)), 4000);
+      }, []);
+      const remove = useCallback(id => setToasts(p=>p.filter(t=>t.id!==id)), []);
+      return { toasts, add, remove };
+    }
+
+    /* ============================================
+       CONFIRM MODAL
+    ============================================ */
+    function ConfirmModal({ open, title, message, onConfirm, onCancel }) {
+      if (!open) return null;
+      return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 max-w-sm w-full shadow-2xl fade-in">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-trash text-red-500 text-2xl"></i>
+              </div>
+              <h3 className="font-heading text-xl font-bold text-gray-900 mb-2">{title}</h3>
+              <p className="text-gray-400 text-sm leading-relaxed">{message}</p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={onCancel} className="flex-1 py-3 border-2 border-gray-100 rounded-xl font-semibold text-sm text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+              <button onClick={onConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-xl font-semibold text-sm hover:bg-red-600 transition-colors">Delete</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================
+       STATS CARD
+    ============================================ */
+    function StatsCard({ icon, label, value, sub, bg, trend }) {
+      return (
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-4">
+            <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center`}>
+              <i className={`${icon} text-white`}></i>
+            </div>
+            {trend !== undefined && (
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${trend>=0?'bg-emerald-50 text-emerald-600':'bg-red-50 text-red-600'}`}>
+                {trend>=0?'+':''}{trend}%
+              </span>
+            )}
+          </div>
+          <p className="text-2xl font-heading font-extrabold text-gray-900 leading-tight">{value}</p>
+          <p className="text-xs font-semibold text-gray-600 mt-0.5">{label}</p>
+          {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+        </div>
+      );
+    }
+
+    /* ============================================
+       LOGIN PAGE
+    ============================================ */
+    function LoginPage({ onLogin }) {
+      const [user,     setUser]     = useState('');
+      const [pass,     setPass]     = useState('');
+      const [showPass, setShowPass] = useState(false);
+      const [error,    setError]    = useState('');
+      const [loading,  setLoading]  = useState(false);
+
+      const submit = e => {
+        e.preventDefault();
+        setError(''); setLoading(true);
+        setTimeout(() => {
+          const currentPass = localStorage.getItem('aura_admin_password') || 'admin123';
+          if (user === ADMIN_USER && pass === currentPass) {
+            sessionStorage.setItem('aura_admin_auth', '1');
+            onLogin();
+          } else {
+            setError('Invalid username or password.');
+          }
+          setLoading(false);
+        }, 700);
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 flex items-center justify-center p-4 relative overflow-hidden">
+          {/* decorative blobs */}
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-accent opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-amber-500 opacity-5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+
+          <div className="relative w-full max-w-md fade-in">
+            {/* Brand */}
+            <div className="text-center mb-8">
+              <h1 className="font-heading text-5xl font-extrabold text-white tracking-[0.2em]">
+                AURA<span className="text-accent">.</span>
+              </h1>
+              <p className="text-gray-400 mt-2 text-xs font-semibold tracking-[0.3em] uppercase">Admin Control Panel</p>
+            </div>
+
+            {/* Card */}
+            <div className="bg-white rounded-3xl p-8 shadow-2xl">
+              <h2 className="font-heading text-2xl font-bold text-gray-900 mb-1">Sign In</h2>
+              <p className="text-gray-400 text-sm mb-7">Enter your admin credentials to continue</p>
+
+              <form onSubmit={submit} className="space-y-4">
+                {/* Username */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Username</label>
+                  <div className="relative">
+                    <i className="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+                    <input type="text" value={user} onChange={e=>setUser(e.target.value)} placeholder="admin" required
+                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-100 bg-gray-50 rounded-xl text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Password</label>
+                  <div className="relative">
+                    <i className="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+                    <input type={showPass?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••" required
+                      className="w-full pl-10 pr-11 py-3 border-2 border-gray-100 bg-gray-50 rounded-xl text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+                    <button type="button" onClick={()=>setShowPass(p=>!p)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      <i className={`fas ${showPass?'fa-eye-slash':'fa-eye'} text-sm`}></i>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Error */}
+                {error && (
+                  <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
+                    <i className="fas fa-exclamation-circle"></i> {error}
+                  </div>
+                )}
+
+                {/* Submit */}
+                <button type="submit" disabled={loading}
+                  className="w-full py-3.5 bg-gray-900 hover:bg-accent text-white rounded-xl font-heading font-semibold tracking-widest text-sm transition-all duration-300 disabled:opacity-60 flex items-center justify-center gap-2">
+                  {loading ? <><i className="fas fa-spinner fa-spin"></i> Authenticating…</> : <><i className="fas fa-sign-in-alt"></i> SIGN IN</>}
+                </button>
+              </form>
+
+              <div className="mt-5 pt-5 border-t border-gray-100 text-center text-xs text-gray-400">
+                Demo: <span className="font-semibold text-gray-600">admin</span> / <span className="font-semibold text-gray-600">admin123</span>
+              </div>
+            </div>
+
+            <p className="text-center text-gray-600 text-xs mt-6">&copy; 2026 AURA WEAR · Admin Portal</p>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================
+       SIDEBAR
+    ============================================ */
+    function Sidebar({ page, setPage, onLogout, collapsed, setCollapsed }) {
+      const nav = [
+        { id:'dashboard', icon:'fas fa-chart-pie',    label:'Dashboard' },
+        { id:'products',  icon:'fas fa-box-open',     label:'Products'  },
+        { id:'add',       icon:'fas fa-plus-circle',  label:'Add Product'},
+        { id:'analytics', icon:'fas fa-chart-line',   label:'Analytics' },
+        { id:'orders',    icon:'fas fa-shopping-bag', label:'Orders'    },
+        { id:'settings',  icon:'fas fa-cog',          label:'Settings'  },
+      ];
+      return (
+        <aside className={`fixed inset-y-0 left-0 flex flex-col bg-gray-950 text-white z-40 transition-all duration-300 ${collapsed?'w-[72px]':'w-60'}`}>
+          {/* Header */}
+          <div className={`flex items-center border-b border-white/10 h-16 px-4 ${collapsed?'justify-center':'justify-between'}`}>
+            {!collapsed && <span className="font-heading font-extrabold text-xl tracking-[0.2em]">AURA<span className="text-accent">.</span></span>}
+            <button onClick={()=>setCollapsed(c=>!c)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white">
+              <i className={`fas ${collapsed?'fa-bars':'fa-chevron-left'} text-sm`}></i>
+            </button>
+          </div>
+
+          {/* Admin badge */}
+          {!collapsed && (
+            <div className="px-4 py-4 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center font-heading font-bold text-xs flex-shrink-0">AD</div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold leading-tight truncate">Administrator</p>
+                  <p className="text-xs text-gray-500">Super Admin</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Nav */}
+          <nav className="flex-1 p-2 overflow-y-auto space-y-0.5 mt-2">
+            {nav.map(item => (
+              <button key={item.id} onClick={()=>setPage(item.id)} title={collapsed?item.label:''}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all
+                  ${page===item.id?'bg-accent text-white shadow-lg shadow-accent/30':'text-gray-400 hover:text-white hover:bg-white/10'}
+                  ${collapsed?'justify-center':''}`}>
+                <i className={`${item.icon} w-4 text-center flex-shrink-0`}></i>
+                {!collapsed && <span>{item.label}</span>}
+              </button>
+            ))}
+          </nav>
+
+          {/* Bottom */}
+          <div className="p-2 border-t border-white/10 space-y-0.5">
+            <a href="index.html" title={collapsed?'View Store':''} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all text-sm ${collapsed?'justify-center':''}`}>
+              <i className="fas fa-store w-4 text-center flex-shrink-0"></i>
+              {!collapsed && <span>View Store</span>}
+            </a>
+            <button onClick={onLogout} title={collapsed?'Logout':''} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-900/20 transition-all text-sm ${collapsed?'justify-center':''}`}>
+              <i className="fas fa-sign-out-alt w-4 text-center flex-shrink-0"></i>
+              {!collapsed && <span>Logout</span>}
+            </button>
+          </div>
+        </aside>
+      );
+    }
+
+    /* ============================================
+       DASHBOARD PAGE
+    ============================================ */
+    function DashboardPage({ products, setPage, categories }) {
+      const totalVal  = products.reduce((s,p) => s + p.price, 0);
+      const cats      = [...new Set(products.map(p=>p.category))];
+      const avgRating = (products.reduce((s,p)=>s+p.rating,0)/(products.length||1)).toFixed(1);
+      const saleCount = products.filter(p=>p.originalPrice).length;
+
+      const catDist = categories.map(cat => ({
+        cat, count: products.filter(p=>p.category===cat).length
+      })).filter(c=>c.count>0);
+      const maxCount = Math.max(...catDist.map(c=>c.count), 1);
+
+      return (
+        <div className="space-y-7 fade-in">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-2xl font-extrabold text-gray-900">Dashboard</h1>
+              <p className="text-gray-400 text-xs mt-0.5">Welcome back — here's your store overview.</p>
+            </div>
+            <button onClick={()=>setPage('add')} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-semibold rounded-xl hover:bg-accent-dark transition-colors shadow-lg shadow-accent/30">
+              <i className="fas fa-plus"></i> Add Product
+            </button>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard icon="fas fa-box-open"  label="Total Products"  value={products.length} sub="Active catalog"          bg="bg-accent"      trend={12} />
+            <StatsCard icon="fas fa-dollar-sign" label="Catalog Value" value={`$${totalVal.toLocaleString()}`} sub="Sum of prices" bg="bg-emerald-500" trend={8}  />
+            <StatsCard icon="fas fa-tags"        label="Categories"    value={cats.length}       sub={`of ${categories.length}`} bg="bg-blue-500"  />
+            <StatsCard icon="fas fa-star"        label="Avg Rating"    value={avgRating}          sub={`${saleCount} on sale`}    bg="bg-amber-500" trend={2}  />
+          </div>
+
+          {/* Recent + Category breakdown */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+            {/* Recent Products */}
+            <div className="lg:col-span-3 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-heading font-bold text-gray-900">Recent Products</h2>
+                <button onClick={()=>setPage('products')} className="text-accent text-xs font-semibold hover:underline">View All →</button>
+              </div>
+              <div className="space-y-2">
+                {[...products].reverse().slice(0,5).map(p => (
+                  <div key={p.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 transition-colors">
+                    {p.image ? (
+                      <img src={p.image} className="w-10 h-10 rounded-xl object-cover flex-shrink-0" alt="" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style={{background:p.iconBg}}>{p.icon}</div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{p.title}</p>
+                      <p className="text-xs text-gray-400">{p.category}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-sm font-bold text-gray-900">${p.price.toFixed(2)}</p>
+                      <p className="text-xs text-amber-500">★ {p.rating}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Category bars */}
+            <div className="lg:col-span-2 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 className="font-heading font-bold text-gray-900 mb-4">By Category</h2>
+              <div className="space-y-3">
+                {catDist.map(c => (
+                  <div key={c.cat}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="font-medium text-gray-700">{c.cat}</span>
+                      <span className="text-gray-400">{c.count}</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-accent rounded-full transition-all duration-700" style={{width:`${(c.count/maxCount)*100}%`}}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Quick actions */}
+          <div className="bg-gradient-to-r from-gray-950 to-gray-800 rounded-2xl p-5">
+            <h2 className="font-heading font-bold text-white mb-3 text-sm uppercase tracking-widest">Quick Actions</h2>
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                {icon:'fa-plus',       label:'Add',      action:()=>setPage('add')},
+                {icon:'fa-box-open',   label:'Products', action:()=>setPage('products')},
+                {icon:'fa-chart-line', label:'Analytics',action:()=>setPage('analytics')},
+                {icon:'fa-cog',        label:'Settings', action:()=>setPage('settings')},
+              ].map(q=>(
+                <button key={q.label} onClick={q.action}
+                  className="flex flex-col items-center gap-2 py-4 rounded-xl bg-white/10 hover:bg-accent transition-all duration-200 text-white text-xs font-semibold">
+                  <i className={`fas ${q.icon} text-base`}></i>{q.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================
+       PRODUCT FORM (ADD / EDIT)
+    ============================================ */
+    function ProductFormPage({ editProduct, onSave, onCancel, toast, categories, onAddCategory }) {
+      const blank = {
+        title:'', category:categories[0] || 'Suits', price:'', originalPrice:'',
+        description:'', rating:'4.7', reviews:'0', color:COLORS[0],
+        size:SIZES[2], popularity:'80', icon:ICON_OPTIONS[0].icon, iconBg:GRADIENTS[0],
+        image: ''
+      };
+      const [form,   setForm]   = useState(blank);
+      const [errors, setErrors] = useState({});
+      const [saving, setSaving] = useState(false);
+      const [dragActive, setDragActive] = useState(false);
+
+      const [showInlineAdder, setShowInlineAdder] = useState(false);
+      const [inlineCat, setInlineCat] = useState('');
+
+      useEffect(() => {
+        if (editProduct) {
+          setForm({
+            title:         editProduct.title        || '',
+            category:      editProduct.category     || categories[0] || 'Suits',
+            price:         String(editProduct.price || ''),
+            originalPrice: String(editProduct.originalPrice || ''),
+            description:   editProduct.description  || '',
+            rating:        String(editProduct.rating        || '4.7'),
+            reviews:       String(editProduct.reviews       || '0'),
+            color:         editProduct.color        || COLORS[0],
+            size:          editProduct.size         || 'M',
+            popularity:    String(editProduct.popularity    || '80'),
+            icon:          editProduct.icon         || ICON_OPTIONS[0].icon,
+            iconBg:        editProduct.iconBg       || GRADIENTS[0],
+            image:         editProduct.image        || '',
+          });
+        } else {
+          setForm(blank);
+        }
+        setErrors({});
+      }, [editProduct, categories]);
+
+      const handleInlineAdd = () => {
+        const trimmed = inlineCat.trim();
+        if (!trimmed) {
+          toast('Category name cannot be empty', 'error');
+          return;
+        }
+        const success = onAddCategory(trimmed);
+        if (success) {
+          setForm(p => ({ ...p, category: trimmed }));
+          setInlineCat('');
+          setShowInlineAdder(false);
+        }
+      };
+
+      const set = (k,v) => {
+        setForm(p => ({...p, [k]:v}));
+        setErrors(p => ({...p, [k]:undefined}));
+      };
+
+      const validate = () => {
+        const e = {};
+        if (!form.title.trim())  e.title = 'Required';
+        if (!form.description.trim()) e.description = 'Required';
+        if (!form.price || isNaN(+form.price) || +form.price <= 0) e.price = 'Must be a positive number';
+        if (form.originalPrice && (isNaN(+form.originalPrice) || +form.originalPrice <= 0)) e.originalPrice = 'Must be a positive number';
+        if (+form.rating < 1 || +form.rating > 5) e.rating = 'Must be 1–5';
+        return e;
+      };
+
+      const processImageFile = file => {
+        if (!file.type.startsWith('image/')) {
+          toast('Please upload an image file.', 'error');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 800;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+            set('image', compressedBase64);
+            toast('Photo uploaded & optimized successfully!', 'success');
+          };
+          img.src = reader.result;
+        };
+        reader.onerror = () => {
+          toast('Failed to read file.', 'error');
+        };
+        reader.readAsDataURL(file);
+      };
+
+      const handleImageUpload = e => {
+        const file = e.target.files[0];
+        if (file) processImageFile(file);
+      };
+
+      const handleDrag = useCallback(e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+          setDragActive(true);
+        } else if (e.type === "dragleave") {
+          setDragActive(false);
+        }
+      }, []);
+
+      const handleDrop = useCallback(e => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          processImageFile(e.dataTransfer.files[0]);
+        }
+      }, []);
+
+      const submit = e => {
+        e.preventDefault();
+        const errs = validate();
+        if (Object.keys(errs).length) { setErrors(errs); toast('Fix the highlighted errors.','error'); return; }
+        setSaving(true);
+        setTimeout(() => {
+          onSave({
+            id:           editProduct ? editProduct.id : genId(),
+            title:        form.title.trim(),
+            category:     form.category,
+            price:        +form.price,
+            originalPrice:form.originalPrice ? +form.originalPrice : undefined,
+            description:  form.description.trim(),
+            rating:       +form.rating,
+            reviews:      +form.reviews,
+            color:        form.color,
+            size:         form.size,
+            popularity:   +form.popularity,
+            icon:         form.icon,
+            iconBg:       form.iconBg,
+            image:        form.image || undefined,
+          });
+          setSaving(false);
+        }, 600);
+      };
+
+      const F = ({label,name,type='text',placeholder,required}) => (
+        <div>
+          <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">
+            {label} {required&&<span className="text-red-400">*</span>}
+          </label>
+          <input type={type} value={form[name]} onChange={e=>set(name,e.target.value)} placeholder={placeholder}
+            className={`w-full px-4 py-2.5 border-2 rounded-xl bg-gray-50 text-sm transition-all focus:outline-none focus:bg-white
+              ${errors[name]?'border-red-400':'border-gray-100 focus:border-accent'}`} />
+          {errors[name] && <p className="text-red-500 text-xs mt-1"><i className="fas fa-exclamation-circle mr-1"></i>{errors[name]}</p>}
+        </div>
+      );
+
+      return (
+        <div className="space-y-6 fade-in">
+          {/* Header */}
+          <div className="flex items-center gap-3">
+            {onCancel && (
+              <button onClick={onCancel} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors text-gray-500">
+                <i className="fas fa-arrow-left"></i>
+              </button>
+            )}
+            <div>
+              <h1 className="font-heading text-2xl font-extrabold text-gray-900">{editProduct?'Edit Product':'Add New Product'}</h1>
+              <p className="text-gray-400 text-xs mt-0.5">{editProduct?'Update product details below':'Fill in the form to add a new product to the catalog'}</p>
+            </div>
+          </div>
+
+          <form onSubmit={submit}>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+              {/* Left: form fields */}
+              <div className="lg:col-span-2 space-y-5">
+
+                {/* Basic Info */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <h2 className="font-heading font-bold text-gray-900 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i className="fas fa-info-circle text-accent"></i> Basic Info
+                  </h2>
+                  <div className="space-y-4">
+                    <F label="Product Name" name="title" placeholder="e.g. Premium Silk Tie" required />
+                    <div>
+                      <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Description <span className="text-red-400">*</span></label>
+                      <textarea rows={4} value={form.description} onChange={e=>set('description',e.target.value)} placeholder="Describe the product..."
+                        className={`w-full px-4 py-2.5 border-2 rounded-xl bg-gray-50 text-sm resize-none transition-all focus:outline-none focus:bg-white
+                          ${errors.description?'border-red-400':'border-gray-100 focus:border-accent'}`}/>
+                      {errors.description && <p className="text-red-500 text-xs mt-1"><i className="fas fa-exclamation-circle mr-1"></i>{errors.description}</p>}
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest">Category <span className="text-red-400">*</span></label>
+                          <button type="button" onClick={()=>setShowInlineAdder(!showInlineAdder)} className="text-accent hover:text-accent-dark text-[10px] font-bold uppercase tracking-wider transition-colors focus:outline-none">
+                            {showInlineAdder ? 'Cancel' : '+ Add Custom'}
+                          </button>
+                        </div>
+                        {!showInlineAdder ? (
+                          <select value={form.category} onChange={e=>set('category',e.target.value)}
+                            className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent transition-all">
+                            {categories.map(c=><option key={c}>{c}</option>)}
+                          </select>
+                        ) : (
+                          <div className="flex gap-2">
+                            <input type="text" value={inlineCat} onChange={e=>setInlineCat(e.target.value)} placeholder="New category name..."
+                              className="flex-1 px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+                            <button type="button" onClick={handleInlineAdd}
+                              className="px-4 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold hover:bg-accent-dark transition-colors">
+                              Add
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Size</label>
+                        <select value={form.size} onChange={e=>set('size',e.target.value)}
+                          className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent transition-all">
+                          {SIZES.map(s=><option key={s}>{s}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pricing & Stats */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <h2 className="font-heading font-bold text-gray-900 text-sm uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i className="fas fa-tag text-accent"></i> Pricing & Stats
+                  </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    <F label="Current Price ($)" name="price" type="number" placeholder="0.00" required />
+                    <F label="Original Price ($)" name="originalPrice" type="number" placeholder="Leave blank if no sale" />
+                    <F label="Rating (1–5)" name="rating" type="number" placeholder="4.5" />
+                    <F label="Review Count" name="reviews" type="number" placeholder="0" />
+                    <div className="col-span-2">
+                      <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Popularity — {form.popularity}/100</label>
+                      <input type="range" min="1" max="100" value={form.popularity} onChange={e=>set('popularity',e.target.value)} className="w-full" />
+                      <div className="flex justify-between text-[10px] text-gray-400 mt-0.5"><span>Low</span><span>Best Seller</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Color */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <h2 className="font-heading font-bold text-gray-900 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i className="fas fa-palette text-accent"></i> Color Variant
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {COLORS.map(c=>(
+                      <button key={c} type="button" onClick={()=>set('color',c)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold border-2 capitalize transition-all
+                          ${form.color===c?'border-accent bg-accent text-white':'border-gray-200 text-gray-600 hover:border-gray-400'}`}>
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: preview + icon picker */}
+              <div className="space-y-5">
+
+                {/* Live Preview */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <h2 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Live Preview</h2>
+                  <div className="rounded-xl overflow-hidden border border-gray-100">
+                    <div className="h-40 flex items-center justify-center text-5xl relative overflow-hidden" style={{background:form.image ? 'none' : form.iconBg}}>
+                      {form.image ? (
+                        <img src={form.image} className="w-full h-full object-cover" alt="Preview" />
+                      ) : (
+                        form.icon
+                      )}
+                    </div>
+                    <div className="p-3 bg-white">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">{form.category}</p>
+                      <p className="font-heading font-semibold text-gray-900 text-sm leading-tight line-clamp-2 mb-1">{form.title||'Product Name'}</p>
+                      <div className="flex items-center gap-2">
+                        {form.originalPrice && <span className="text-xs text-gray-400 line-through">${(+form.originalPrice).toFixed(2)}</span>}
+                        <span className="font-bold text-accent text-sm">${(+form.price||0).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upload Photo */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <h2 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Upload Photo</h2>
+                  {form.image ? (
+                    <div className="space-y-2">
+                      <div className="relative h-32 rounded-xl overflow-hidden border border-gray-200">
+                        <img src={form.image} className="w-full h-full object-cover" />
+                        <button type="button" onClick={() => set('image', '')}
+                          className="absolute top-2 right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow transition-colors"
+                          title="Remove Photo">
+                          <i className="fas fa-trash text-xs"></i>
+                        </button>
+                      </div>
+                      <p className="text-[10px] text-gray-400 text-center">Photo uploaded and compressed.</p>
+                    </div>
+                  ) : (
+                    <label 
+                      onDragEnter={handleDrag}
+                      onDragOver={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDrop={handleDrop}
+                      className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors text-center
+                        ${dragActive ? 'border-accent bg-orange-50/20' : 'border-gray-200 hover:border-accent hover:bg-orange-50/10'}`}
+                    >
+                      <i className={`fas fa-cloud-upload-alt text-2xl mb-2 transition-transform ${dragActive ? 'text-accent scale-110' : 'text-gray-400'}`}></i>
+                      <span className="text-xs font-semibold text-gray-600">
+                        {dragActive ? 'Drop Image Here' : 'Select Image File'}
+                      </span>
+                      <span className="text-[9px] text-gray-400 mt-1">PNG, JPG, WebP (auto-optimized)</span>
+                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                    </label>
+                  )}
+                </div>
+
+                {/* Icon Picker */}
+                <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                  <h2 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-3">Product Icon</h2>
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {ICON_OPTIONS.map(o=>(
+                      <button key={o.icon} type="button" onClick={()=>set('icon',o.icon)} title={o.label}
+                        className={`h-11 rounded-xl flex items-center justify-center text-2xl transition-all
+                          ${form.icon===o.icon?'bg-accent/20 border-2 border-accent scale-110':'bg-gray-50 border-2 border-transparent hover:bg-gray-100'}`}>
+                        {o.icon}
+                      </button>
+                    ))}
+                  </div>
+                  <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Background</h3>
+                  <div className="grid grid-cols-4 gap-2">
+                    {GRADIENTS.map((bg,i)=>(
+                      <button key={i} type="button" onClick={()=>set('iconBg',bg)}
+                        className={`h-9 rounded-lg transition-all ${form.iconBg===bg?'scale-110 ring-2 ring-accent ring-offset-1':'hover:scale-105'}`}
+                        style={{background:bg}} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <div className="space-y-2">
+                  <button type="submit" disabled={saving}
+                    className="w-full py-3.5 bg-accent text-white rounded-xl font-heading font-bold tracking-widest text-sm hover:bg-accent-dark transition-all shadow-lg shadow-accent/30 disabled:opacity-60 flex items-center justify-center gap-2">
+                    {saving?<><i className="fas fa-spinner fa-spin"></i> Saving…</>:<><i className={`fas ${editProduct?'fa-save':'fa-plus'}`}></i> {editProduct?'SAVE CHANGES':'ADD PRODUCT'}</>}
+                  </button>
+                  {onCancel && (
+                    <button type="button" onClick={onCancel} className="w-full py-2.5 border-2 border-gray-100 text-gray-500 rounded-xl text-sm font-semibold hover:border-gray-300 transition-all">
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      );
+    }
+
+    /* ============================================
+       PRODUCTS LIST PAGE
+    ============================================ */
+    function ProductsPage({ products, onEdit, onDelete }) {
+      const [search,   setSearch]   = useState('');
+      const [catF,     setCatF]     = useState('All');
+      const [sort,     setSort]     = useState('newest');
+      const [confirm,  setConfirm]  = useState(null);
+
+      const cats = ['All', ...new Set(products.map(p=>p.category))];
+
+      const list = useMemo(()=>{
+        let r = products.filter(p => {
+          const q = search.toLowerCase();
+          return (!q || p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))
+              && (catF==='All' || p.category===catF);
+        });
+        if (sort==='price-low')  r = [...r].sort((a,b)=>a.price-b.price);
+        else if (sort==='price-high') r = [...r].sort((a,b)=>b.price-a.price);
+        else if (sort==='rating')     r = [...r].sort((a,b)=>b.rating-a.rating);
+        else if (sort==='name')       r = [...r].sort((a,b)=>a.title.localeCompare(b.title));
+        else r = [...r].reverse();
+        return r;
+      }, [products, search, catF, sort]);
+
+      return (
+        <div className="space-y-5 fade-in">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-2xl font-extrabold text-gray-900">Products</h1>
+              <p className="text-gray-400 text-xs mt-0.5">{products.length} items in catalog</p>
+            </div>
+            <button onClick={()=>onEdit(null)} className="flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-semibold rounded-xl hover:bg-accent-dark transition-colors shadow-lg shadow-accent/30">
+              <i className="fas fa-plus"></i> Add Product
+            </button>
+          </div>
+
+          {/* Filters */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-wrap gap-3">
+            <div className="relative flex-1 min-w-48">
+              <i className="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+              <input type="text" placeholder="Search products…" value={search} onChange={e=>setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-accent transition-all" />
+            </div>
+            <select value={catF} onChange={e=>setCatF(e.target.value)}
+              className="px-4 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-accent">
+              {cats.map(c=><option key={c}>{c}</option>)}
+            </select>
+            <select value={sort} onChange={e=>setSort(e.target.value)}
+              className="px-4 py-2.5 bg-gray-50 border-2 border-gray-100 rounded-xl text-sm focus:outline-none focus:border-accent">
+              <option value="newest">Newest First</option>
+              <option value="name">Name A–Z</option>
+              <option value="price-low">Price ↑</option>
+              <option value="price-high">Price ↓</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
+
+          {search && <p className="text-sm text-gray-500">Showing <b className="text-gray-900">{list.length}</b> result{list.length!==1?'s':''} for "<b>{search}</b>"</p>}
+
+          {/* Grid */}
+          {list.length === 0 ? (
+            <div className="bg-white rounded-2xl p-16 text-center shadow-sm border border-gray-100">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="font-heading font-bold text-gray-900 text-xl mb-2">No Products Found</h3>
+              <p className="text-gray-400 text-sm">Try adjusting your search or filter.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {list.map(p => (
+                <div key={p.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all group">
+                  {/* Icon banner */}
+                  <div className="h-40 flex items-center justify-center text-5xl relative overflow-hidden" style={{background:p.image ? 'none' : p.iconBg}}>
+                    {p.image ? (
+                      <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" alt={p.title} />
+                    ) : (
+                      <span className="group-hover:scale-110 transition-transform duration-300 block">{p.icon}</span>
+                    )}
+                    {/* Badges */}
+                    <div className="absolute top-2.5 left-2.5 flex gap-1.5">
+                      {p.originalPrice && <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">SALE</span>}
+                      {p.popularity>95  && <span className="bg-gray-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">BEST</span>}
+                    </div>
+                    {/* Hover actions */}
+                    <div className="absolute top-2.5 right-2.5 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={()=>onEdit(p)} className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-md text-accent hover:bg-accent hover:text-white transition-colors" title="Edit">
+                        <i className="fas fa-pen text-xs"></i>
+                      </button>
+                      <button onClick={()=>setConfirm(p)} className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-md text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Delete">
+                        <i className="fas fa-trash text-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-4">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider">{p.category}</p>
+                    <h3 className="font-heading font-semibold text-gray-900 leading-tight mb-1 truncate">{p.title}</h3>
+                    <p className="text-gray-400 text-xs line-clamp-2 mb-3">{p.description}</p>
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div>
+                        {p.originalPrice && <span className="text-xs text-gray-400 line-through block">${p.originalPrice.toFixed(2)}</span>}
+                        <span className="font-bold text-accent">${p.price.toFixed(2)}</span>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <p className="text-xs text-amber-500 font-semibold">★ {p.rating} <span className="text-gray-400">({p.reviews})</span></p>
+                        <div className="flex gap-2 text-xs">
+                          <button onClick={()=>onEdit(p)} className="text-accent font-semibold hover:underline">Edit</button>
+                          <span className="text-gray-200">|</span>
+                          <button onClick={()=>setConfirm(p)} className="text-red-400 font-semibold hover:underline">Delete</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <ConfirmModal open={!!confirm} title="Delete Product?"
+            message={`"${confirm?.title}" will be permanently removed from the catalog.`}
+            onConfirm={()=>{ onDelete(confirm.id); setConfirm(null); }}
+            onCancel={()=>setConfirm(null)} />
+        </div>
+      );
+    }
+
+    /* ============================================
+       ANALYTICS PAGE
+    ============================================ */
+    function AnalyticsPage({ products, categories }) {
+      const totalVal = products.reduce((s,p)=>s+p.price, 0);
+      const avgPrice = totalVal / (products.length||1);
+      const saleItems = products.filter(p=>p.originalPrice);
+      const savings   = saleItems.reduce((s,p)=>s+(p.originalPrice-p.price), 0);
+
+      const catData = categories.map(cat=>{
+        const ps = products.filter(p=>p.category===cat);
+        return { cat, count:ps.length, value:ps.reduce((s,p)=>s+p.price,0),
+          avgR: ps.length?(ps.reduce((s,p)=>s+p.rating,0)/ps.length).toFixed(1):0 };
+      }).filter(c=>c.count>0).sort((a,b)=>b.value-a.value);
+      const maxVal = Math.max(...catData.map(c=>c.value),1);
+
+      const priceRanges = [
+        {label:'Under $100', min:0,   max:100},
+        {label:'$100–$200',  min:100, max:200},
+        {label:'$200–$350',  min:200, max:350},
+        {label:'$350–$500',  min:350, max:500},
+        {label:'Over $500',  min:500, max:Infinity},
+      ].map(r=>({...r, count:products.filter(p=>p.price>=r.min&&p.price<r.max).length}));
+      const maxPR = Math.max(...priceRanges.map(r=>r.count),1);
+
+      const topProducts = [...products].sort((a,b)=>b.popularity-a.popularity).slice(0,5);
+      const avgRating = (products.reduce((s,p)=>s+p.rating,0)/(products.length||1)).toFixed(2);
+
+      const BAR_COLORS = ['bg-accent','bg-blue-500','bg-emerald-500','bg-purple-500','bg-amber-500','bg-pink-500','bg-indigo-500','bg-teal-500'];
+
+      return (
+        <div className="space-y-6 fade-in">
+          <div>
+            <h1 className="font-heading text-2xl font-extrabold text-gray-900">Analytics</h1>
+            <p className="text-gray-400 text-xs mt-0.5">Detailed breakdown of catalog performance</p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard icon="fas fa-dollar-sign"  label="Catalog Value" value={`$${totalVal.toLocaleString()}`}    bg="bg-accent"      />
+            <StatsCard icon="fas fa-calculator"   label="Avg Price"    value={`$${avgPrice.toFixed(0)}`}            bg="bg-blue-500"    />
+            <StatsCard icon="fas fa-percentage"   label="On Sale"      value={saleItems.length} sub={`$${savings.toFixed(0)} savings`} bg="bg-emerald-500" />
+            <StatsCard icon="fas fa-star"         label="Avg Rating"   value={avgRating}          bg="bg-amber-500"   />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* Category Value */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 className="font-heading font-bold text-gray-900 mb-1">Revenue by Category</h2>
+              <p className="text-gray-400 text-xs mb-5">Total catalog value per category</p>
+              <div className="space-y-4">
+                {catData.map((c,i)=>(
+                  <div key={c.cat}>
+                    <div className="flex items-center justify-between text-sm mb-1.5">
+                      <span className="font-medium text-gray-700 flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${BAR_COLORS[i%BAR_COLORS.length]}`}></span>{c.cat}
+                      </span>
+                      <span className="font-bold text-gray-900">${c.value.toFixed(0)}</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full ${BAR_COLORS[i%BAR_COLORS.length]} rounded-full`} style={{width:`${(c.value/maxVal)*100}%`}}></div>
+                    </div>
+                    <p className="text-[11px] text-gray-400 mt-1">{c.count} items · ★ {c.avgR}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 className="font-heading font-bold text-gray-900 mb-1">Price Distribution</h2>
+              <p className="text-gray-400 text-xs mb-5">Products per price range</p>
+              <div className="space-y-4">
+                {priceRanges.map(r=>(
+                  <div key={r.label}>
+                    <div className="flex items-center justify-between text-sm mb-1.5">
+                      <span className="font-medium text-gray-700">{r.label}</span>
+                      <span className="font-bold text-gray-900">{r.count}</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 rounded-full" style={{width:`${(r.count/maxPR)*100}%`}}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {/* Top Products */}
+            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <h2 className="font-heading font-bold text-gray-900 mb-4">Top 5 by Popularity</h2>
+              <div className="space-y-4">
+                {topProducts.map((p,i)=>(
+                  <div key={p.id} className="flex items-center gap-3">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0"
+                      style={{background:i===0?'linear-gradient(135deg,#FFD700,#FFA500)':i===1?'linear-gradient(135deg,#C0C0C0,#A8A9AD)':i===2?'linear-gradient(135deg,#CD7F32,#9F5D2F)':'#f3f4f6',color:i<3?'#fff':'#6b7280'}}>
+                      #{i+1}
+                    </div>
+                    {p.image ? (
+                      <img src={p.image} className="w-9 h-9 rounded-lg object-cover flex-shrink-0" alt="" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0" style={{background:p.iconBg}}>{p.icon}</div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{p.title}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-accent rounded-full" style={{width:`${p.popularity}%`}}></div>
+                        </div>
+                        <span className="text-[11px] text-gray-400">{p.popularity}%</span>
+                      </div>
+                    </div>
+                    <span className="font-bold text-accent text-sm">${p.price}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Store summary */}
+            <div className="bg-gradient-to-br from-gray-950 to-gray-800 rounded-2xl p-5 text-white">
+              <h2 className="font-heading font-bold text-lg mb-5">Store Summary</h2>
+              <div className="space-y-4">
+                {[
+                  {label:'Total Products',       val: products.length},
+                  {label:'Total Catalog Value',  val: `$${totalVal.toLocaleString()}`},
+                  {label:'Active Categories',    val: new Set(products.map(p=>p.category)).size},
+                  {label:'Products on Sale',     val: saleItems.length},
+                  {label:'Average Rating',       val: `${avgRating} ★`},
+                  {label:'Best Seller',          val: topProducts[0]?.title || '—'},
+                ].map(r=>(
+                  <div key={r.label} className="flex items-center justify-between border-b border-white/10 pb-3 last:border-0 last:pb-0">
+                    <span className="text-sm text-gray-400">{r.label}</span>
+                    <span className="text-sm font-bold text-white truncate max-w-[140px] text-right">{r.val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================
+       ORDERS PAGE
+    ============================================ */
+    function OrdersPage() {
+      const orders = [
+        { id:'#AU-918273', customer:'John Doe',       email:'john@example.com',  items:['Tailored Slim-Fit Suit','Polarized Aviator Sunglasses'], total:465, status:'Delivered',  date:'May 12, 2026' },
+        { id:'#AU-827461', customer:'Sofia Ricci',    email:'sofia@example.com', items:['Precision Swiss Timepiece'],                              total:495, status:'Processing', date:'May 19, 2026' },
+        { id:'#AU-743952', customer:'Marcus Chen',    email:'marcus@example.com',items:['Oxford Derby Leather Shoes','Wide-Brim Wool Fedora Hat'], total:285, status:'Shipped',    date:'May 20, 2026' },
+        { id:'#AU-654821', customer:'Amara Johnson',  email:'amara@example.com', items:['Signature Eau de Parfum','Argan Oil Hair Elixir Set'],    total:163, status:'Delivered',  date:'May 10, 2026' },
+        { id:'#AU-593741', customer:'Pierre Dubois',  email:'pierre@example.com',items:['Structured Linen Blazer'],                               total:135, status:'Cancelled',  date:'May 8,  2026' },
+      ];
+      const STATUS = {
+        Delivered: 'bg-emerald-100 text-emerald-700',
+        Processing:'bg-blue-100 text-blue-700',
+        Shipped:   'bg-amber-100 text-amber-700',
+        Cancelled: 'bg-red-100 text-red-700',
+      };
+      const revenue = orders.filter(o=>o.status!=='Cancelled').reduce((s,o)=>s+o.total,0);
+
+      return (
+        <div className="space-y-6 fade-in">
+          <div>
+            <h1 className="font-heading text-2xl font-extrabold text-gray-900">Orders</h1>
+            <p className="text-gray-400 text-xs mt-0.5">Track and manage customer orders</p>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatsCard icon="fas fa-shopping-bag" label="Total Orders"  value={orders.length}                                           bg="bg-accent"      />
+            <StatsCard icon="fas fa-check-circle" label="Delivered"     value={orders.filter(o=>o.status==='Delivered').length}         bg="bg-emerald-500" />
+            <StatsCard icon="fas fa-truck"        label="In Transit"    value={orders.filter(o=>['Shipped','Processing'].includes(o.status)).length} bg="bg-blue-500" />
+            <StatsCard icon="fas fa-dollar-sign"  label="Revenue"       value={`$${revenue.toFixed(0)}`}                                bg="bg-amber-500"   />
+          </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-heading font-bold text-gray-900">Recent Orders</h2>
+              <span className="text-xs text-gray-400">Showing last {orders.length} orders</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {['Order ID','Customer','Items','Total','Status','Date'].map(h=>(
+                      <th key={h} className="px-5 py-3 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {orders.map(o=>(
+                    <tr key={o.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-4 text-sm font-bold text-accent">{o.id}</td>
+                      <td className="px-5 py-4">
+                        <p className="text-sm font-semibold text-gray-900">{o.customer}</p>
+                        <p className="text-xs text-gray-400">{o.email}</p>
+                      </td>
+                      <td className="px-5 py-4">
+                        <p className="text-sm text-gray-700 max-w-[180px] truncate">{o.items[0]}</p>
+                        {o.items.length>1 && <p className="text-xs text-gray-400">+{o.items.length-1} more</p>}
+                      </td>
+                      <td className="px-5 py-4 text-sm font-bold text-gray-900">${o.total.toFixed(2)}</td>
+                      <td className="px-5 py-4"><span className={`px-2.5 py-1 rounded-full text-xs font-bold ${STATUS[o.status]}`}>{o.status}</span></td>
+                      <td className="px-5 py-4 text-sm text-gray-400">{o.date}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================
+       SETTINGS PAGE
+    ============================================ */
+    function SettingsPage({ toast, categories, onAddCategory, onDeleteCategory }) {
+      const [storeName, setStoreName] = useState('AURA WEAR');
+      const [currency,  setCurrency]  = useState('USD');
+      const [newPass,   setNewPass]   = useState('');
+      const [confPass,  setConfPass]  = useState('');
+      const [newCategory, setNewCategory] = useState('');
+
+      const defaultCats = ['Suits','Clothes','Shoes','Watches','Perfume','Hats','Sunglasses','Hair Products'];
+
+      const handleAddCategoryClick = () => {
+        const trimmed = newCategory.trim();
+        if (!trimmed) {
+          toast('Category name cannot be empty', 'error');
+          return;
+        }
+        const success = onAddCategory(trimmed);
+        if (success) {
+          setNewCategory('');
+        }
+      };
+
+      return (
+        <div className="space-y-6 max-w-2xl fade-in">
+          <div>
+            <h1 className="font-heading text-2xl font-extrabold text-gray-900">Settings</h1>
+            <p className="text-gray-400 text-xs mt-0.5">Manage store configuration and admin credentials</p>
+          </div>
+
+          {/* Store Settings */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h2 className="font-heading font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+              <i className="fas fa-store text-accent"></i> Store Settings
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Store Name</label>
+                <input value={storeName} onChange={e=>setStoreName(e.target.value)}
+                  className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Currency</label>
+                <select value={currency} onChange={e=>setCurrency(e.target.value)}
+                  className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent transition-all">
+                  <option value="USD">USD – US Dollar</option>
+                  <option value="EUR">EUR – Euro</option>
+                  <option value="GBP">GBP – British Pound</option>
+                  <option value="JPY">JPY – Japanese Yen</option>
+                </select>
+              </div>
+              <button onClick={()=>toast('Store settings saved!','success')}
+                className="px-5 py-2.5 bg-accent text-white rounded-xl text-sm font-semibold hover:bg-accent-dark transition-colors">
+                <i className="fas fa-save mr-2"></i>Save Settings
+              </button>
+            </div>
+          </div>
+
+          {/* Manage Categories */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h2 className="font-heading font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+              <i className="fas fa-tags text-accent"></i> Manage Categories
+            </h2>
+            <p className="text-gray-400 text-xs mb-4">View existing categories and add or remove custom categories.</p>
+            
+            {/* Displaying Categories */}
+            <div className="flex flex-wrap gap-2 mb-5">
+              {categories.map(c => {
+                const isDefault = defaultCats.includes(c);
+                return (
+                  <span key={c} className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold select-none transition-all
+                    ${isDefault ? 'bg-gray-100 text-gray-600' : 'bg-accent/10 text-accent border border-accent/20'}`}>
+                    <span>{c}</span>
+                    {!isDefault && (
+                      <button type="button" onClick={() => onDeleteCategory(c)} className="w-4 h-4 rounded-full bg-accent/20 hover:bg-accent/30 text-accent flex items-center justify-center text-[10px] transition-colors focus:outline-none">
+                        <i className="fas fa-times"></i>
+                      </button>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Adding Category */}
+            <div className="flex gap-2">
+              <input type="text" value={newCategory} onChange={e=>setNewCategory(e.target.value)} placeholder="e.g. Activewear"
+                className="flex-1 px-4 py-2 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+              <button type="button" onClick={handleAddCategoryClick}
+                className="px-5 py-2 bg-accent text-white rounded-xl text-sm font-semibold hover:bg-accent-dark transition-colors flex items-center gap-2">
+                <i className="fas fa-plus"></i> Add
+              </button>
+            </div>
+          </div>
+
+          {/* Change Password */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+            <h2 className="font-heading font-bold text-gray-900 mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+              <i className="fas fa-lock text-accent"></i> Change Password
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">New Password</label>
+                <input type="password" value={newPass} onChange={e=>setNewPass(e.target.value)} placeholder="••••••••"
+                  className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Confirm Password</label>
+                <input type="password" value={confPass} onChange={e=>setConfPass(e.target.value)} placeholder="••••••••"
+                  className="w-full px-4 py-2.5 border-2 border-gray-100 rounded-xl bg-gray-50 text-sm focus:outline-none focus:border-accent focus:bg-white transition-all" />
+              </div>
+              <button onClick={()=>{
+                  if (!newPass) return toast('Enter a new password','error');
+                  if (newPass!==confPass) return toast('Passwords do not match','error');
+                  if (newPass.length<6)  return toast('Password must be 6+ characters','error');
+                  localStorage.setItem('aura_admin_password', newPass);
+                  toast('Password updated successfully!','success');
+                  setNewPass(''); setConfPass('');
+                }}
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-accent transition-colors">
+                <i className="fas fa-key mr-2"></i>Update Password
+              </button>
+            </div>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="bg-white rounded-2xl p-5 shadow-sm border-2 border-red-100">
+            <h2 className="font-heading font-bold text-red-500 mb-2 flex items-center gap-2 text-sm uppercase tracking-wider">
+              <i className="fas fa-exclamation-triangle"></i> Danger Zone
+            </h2>
+            <p className="text-gray-400 text-sm mb-4">Reset all products to the default catalog. This cannot be undone.</p>
+            <button onClick={()=>{
+                if (window.confirm('This will reset ALL products to defaults. Are you sure?')) {
+                  localStorage.removeItem('aura_admin_products');
+                  toast('Products reset. Refresh to see changes.','success');
+                }
+              }}
+              className="px-5 py-2.5 bg-red-500 text-white rounded-xl text-sm font-semibold hover:bg-red-600 transition-colors">
+              <i className="fas fa-undo mr-2"></i>Reset to Defaults
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================
+       MAIN APP
+    ============================================ */
+    function App() {
+      const [auth,      setAuth]      = useState(isLoggedIn);
+      const [page,      setPage]      = useState('dashboard');
+      const [editProd,  setEditProd]  = useState(null);
+      const [products,  setProducts]  = useState(dbGetProducts);
+      const [collapsed, setCollapsed] = useState(false);
+      const { toasts, add: toast, remove } = useToast();
+
+      const [categories, setCategories] = useState(() => {
+        const defaultCats = ['Suits','Clothes','Shoes','Watches','Perfume','Hats','Sunglasses','Hair Products'];
+        try {
+          const saved = JSON.parse(localStorage.getItem('aura_categories'));
+          if (saved && Array.isArray(saved)) {
+            return [...new Set([...defaultCats, ...saved])];
+          }
+        } catch (e) {}
+        return defaultCats;
+      });
+
+      const handleAddCategory = useCallback((newCat) => {
+        const trimmed = newCat.trim();
+        if (!trimmed) {
+          toast('Category name cannot be empty', 'error');
+          return false;
+        }
+        if (categories.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
+          toast(`Category "${trimmed}" already exists`, 'error');
+          return false;
+        }
+
+        const updated = [...categories, trimmed];
+        setCategories(updated);
+        
+        const defaultCats = ['Suits','Clothes','Shoes','Watches','Perfume','Hats','Sunglasses','Hair Products'];
+        const custom = updated.filter(c => !defaultCats.includes(c));
+        localStorage.setItem('aura_categories', JSON.stringify(custom));
+        
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'aura_categories',
+          newValue: JSON.stringify(custom)
+        }));
+
+        toast(`Category "${trimmed}" added!`, 'success');
+        return true;
+      }, [categories, toast]);
+
+      const handleDeleteCategory = useCallback((catToDelete) => {
+        const defaultCats = ['Suits','Clothes','Shoes','Watches','Perfume','Hats','Sunglasses','Hair Products'];
+        if (defaultCats.includes(catToDelete)) {
+          toast('Cannot delete default categories', 'error');
+          return;
+        }
+
+        const updated = categories.filter(c => c !== catToDelete);
+        setCategories(updated);
+
+        const custom = updated.filter(c => !defaultCats.includes(c));
+        localStorage.setItem('aura_categories', JSON.stringify(custom));
+
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'aura_categories',
+          newValue: JSON.stringify(custom)
+        }));
+
+        toast(`Category "${catToDelete}" removed`, 'success');
+      }, [categories, toast]);
+
+      const logout = useCallback(()=>{ sessionStorage.removeItem('aura_admin_auth'); setAuth(false); }, []);
+
+      const handleSave = useCallback(prod => {
+        setProducts(prev => {
+          const idx = prev.findIndex(p=>p.id===prod.id);
+          // Edit → replace only that item; Add → append new item (existing ones unchanged)
+          const updated = idx > -1 ? prev.map(p=>p.id===prod.id?prod:p) : [...prev, prod];
+          dbSaveProducts(updated);
+          return updated;
+        });
+        toast(editProd ? `"${prod.title}" updated!` : `"${prod.title}" added to catalog!`, 'success');
+        setEditProd(null);
+        setPage('products');
+      }, [editProd, toast]);
+
+      const handleDelete = useCallback(id => {
+        setProducts(prev => { const u = prev.filter(p=>p.id!==id); dbSaveProducts(u); return u; });
+        toast('Product removed from catalog.', 'success');
+      }, [toast]);
+
+      const handleEdit = useCallback(prod => { setEditProd(prod); setPage('add'); }, []);
+
+      const navigate = useCallback(p => { if (p !== 'add') setEditProd(null); setPage(p); }, []);
+
+      if (!auth) return <LoginPage onLogin={()=>setAuth(true)} />;
+
+      const ml = collapsed ? 'ml-[72px]' : 'ml-60';
+
+      const renderPage = () => {
+        switch(page) {
+          case 'dashboard': return <DashboardPage products={products} setPage={navigate} categories={categories} />;
+          case 'products':  return <ProductsPage products={products} onEdit={handleEdit} onDelete={handleDelete} />;
+          case 'add':       return <ProductFormPage editProduct={editProd} onSave={handleSave}
+                                     onCancel={editProd?()=>{setEditProd(null);setPage('products');}:null}
+                                     toast={toast} categories={categories} onAddCategory={handleAddCategory} />;
+          case 'analytics': return <AnalyticsPage products={products} categories={categories} />;
+          case 'orders':    return <OrdersPage />;
+          case 'settings':  return <SettingsPage toast={toast} categories={categories} onAddCategory={handleAddCategory} onDeleteCategory={handleDeleteCategory} />;
+          default:          return <DashboardPage products={products} setPage={navigate} categories={categories} />;
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50">
+          <Sidebar page={page} setPage={navigate} onLogout={logout} collapsed={collapsed} setCollapsed={setCollapsed} />
+
+          <div className={`${ml} min-h-screen flex flex-col transition-all duration-300`}>
+            {/* Top bar */}
+            <header className="bg-white border-b border-gray-100 h-16 px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+              <div>
+                <h2 className="font-heading font-bold text-gray-900 capitalize text-sm">
+                  {page==='add'?(editProd?'Edit Product':'Add Product'):page}
+                </h2>
+                <p className="text-[11px] text-gray-400">AURA WEAR Admin Portal</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:block text-right">
+                  <p className="text-xs font-semibold text-gray-900">Administrator</p>
+                  <p className="text-[11px] text-gray-400">{new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}</p>
+                </div>
+                <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center font-heading font-bold text-white text-xs">AD</div>
+              </div>
+            </header>
+
+            {/* Page content */}
+            <main className="flex-1 p-6 lg:p-8">
+              {renderPage()}
+            </main>
+          </div>
+
+          <Toast toasts={toasts} remove={remove} />
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Story | AURA WEAR Heritage & Sustainable Couture</title>
+  <meta name="description" content="Discover the heritage of AURA WEAR. Ethical craftsmanship, organic materials, and timeless minimalist architecture in apparel design.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link active">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- EDITORIAL HERO -->
+  <header class="editorial-hero">
+    <div class="container">
+      <span class="editorial-label">AURA HERITAGE</span>
+      <h1>OUR STORY & CREATIVE VISION</h1>
+      <p>Redefining contemporary style through ethical sourcing, architectural forms, and absolute sustainability.</p>
+    </div>
+  </header>
+
+  <main>
+    <!-- STORY CONTENT -->
+    <section class="section-padding container">
+      <div class="editorial-showcase">
+        <div class="editorial-img-side">
+          <img src="assets/fashion_hero_banner.png" alt="AURA Editorial Studio Shot">
+        </div>
+        <div class="editorial-content-side">
+          <span class="editorial-label">Atelier Milan</span>
+          <h2>THE ESSENCE OF TIMELINESS</h2>
+          <p>Founded at the intersection of Italian sartorial tradition and functional minimalist geometry, AURA was born from a desire to strip away clutter and focus on pristine craftsmanship.</p>
+          <p>We work exclusively with family-run mills in Milan, Como, and Biella, prioritizing high-grade organic fibers like long-staple cotton, natural linen, and cruelty-free wool. We reject fast-fashion trends in favor of limited signature releases, designed to remain architectural staples in a discerning wardrobe for decades.</p>
+          <p>Every piece is manufactured under strict fair-wage covenants, marrying structural design precision with deep social responsibility.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="section-padding timeline-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>THE AURA ATELIER JOURNEY</h2>
+          <p>A look back at the milestone chapters defining our evolution and standards</p>
+        </div>
+
+        <div class="timeline">
+          <!-- Node 1 -->
+          <div class="timeline-node timeline-left">
+            <div class="timeline-box">
+              <div class="timeline-year">2021</div>
+              <h3>CONCEPT & MILANO BIRTH</h3>
+              <p>A group of architects and couturiers establish the Milan studio to fuse structural geometries with natural fabrics.</p>
+            </div>
+          </div>
+          <!-- Node 2 -->
+          <div class="timeline-node timeline-right">
+            <div class="timeline-box">
+              <div class="timeline-year">2023</div>
+              <h3>ORGANIC MATURATION</h3>
+              <p>Achieved 100% GOTS certification for all cotton supply channels. Launched our initial circular-knit collection.</p>
+            </div>
+          </div>
+          <!-- Node 3 -->
+          <div class="timeline-node timeline-left">
+            <div class="timeline-box">
+              <div class="timeline-year">2025</div>
+              <h3>ATELIER EXPANSION</h3>
+              <p>Opening of our flagship experiential showrooms in Paris and Tokyo, and creation of the exclusive Aura Club loyalty portal.</p>
+            </div>
+          </div>
+          <!-- Node 4 -->
+          <div class="timeline-node timeline-right">
+            <div class="timeline-box">
+              <div class="timeline-year">2026</div>
+              <h3>DIGITAL LUXURY</h3>
+              <p>Launching our high-fidelity digital platform to connect global buyers directly with the Milan design floor.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

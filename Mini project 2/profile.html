@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Dashboard | AURA WEAR Club Portal</title>
+  <meta name="description" content="View your orders list, monitor active parcel tracking checkpoints, and check your VIP Aura points balances.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn active navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- AUTH GATE OVERLAY (shown when not logged in) -->
+  <div class="profile-gate" id="profileGate">
+    <div class="profile-gate-card">
+      <i class="fa-solid fa-lock gate-icon"></i>
+      <h2>Members Only</h2>
+      <p>Please sign in to access your AURA WEAR dashboard, track orders, and manage your account.</p>
+      <div class="profile-gate-actions">
+        <a href="auth.html" class="btn btn-primary">Sign In</a>
+        <a href="auth.html?tab=signup" class="btn btn-secondary">Create Account</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PROFILE LAYOUT -->
+  <main class="container section-padding">
+    <!-- Dynamic greeting bar (populated by JS) -->
+    <div id="profileGreeting"></div>
+    <div class="profile-layout">
+      <!-- Left Column: Navigation Sidebar -->
+      <aside class="profile-nav-card">
+        <div class="profile-nav-header">
+          <div class="profile-avatar-circle">JD</div>
+          <h3>John Doe</h3>
+          <p>Gold Member since 2024</p>
+        </div>
+        <ul class="profile-menu-links">
+          <li class="profile-menu-item active" data-pane="paneDashboard">
+            <i class="fa-solid fa-chart-line"></i> Dashboard Overview
+          </li>
+          <li class="profile-menu-item" data-pane="paneFavorites">
+            <i class="fa-solid fa-heart"></i> My Favorites
+          </li>
+          <li class="profile-menu-item" data-pane="paneTracking">
+            <i class="fa-solid fa-truck"></i> Parcel Tracking
+          </li>
+          <li class="profile-menu-item" data-pane="paneSettings">
+            <i class="fa-solid fa-sliders"></i> Saved Addresses
+          </li>
+          <li class="profile-menu-item" data-pane="paneAccountSettings">
+            <i class="fa-solid fa-user-gear"></i> Account Settings
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Right Column: Interactive Content Panes -->
+      <section style="flex:1;">
+        
+        <!-- Pane 1: Dashboard Overview -->
+        <div class="profile-pane active" id="paneDashboard">
+          <h2 id="profileWelcomeHeading">WELCOME BACK</h2>
+          
+          <!-- VIP Loyalty tracker -->
+          <div class="loyalty-widget">
+            <div class="loyalty-widget-bg-art"><i class="fa-solid fa-crown"></i></div>
+            <div class="loyalty-header-row">
+              <span class="loyalty-tier-badge"><i class="fa-solid fa-gem"></i> GOLD VIP TIER</span>
+              <span style="font-size:0.85rem; opacity:0.8;">AURA CLUB ACCUMULATED SAVINGS</span>
+            </div>
+            <div class="loyalty-pts-total">2,450</div>
+            <p style="font-size:0.95rem; opacity:0.8;">Aesthetic reward points available to redeem on premium coutures.</p>
+            
+            <div class="loyalty-progress-row">
+              <div class="loyalty-progress-labels">
+                <span>Gold Tier (2,000 pts)</span>
+                <span>Platinum Tier (3,500 pts)</span>
+              </div>
+              <div class="loyalty-progress-bar">
+                <div class="loyalty-progress-fill"></div>
+              </div>
+              <p style="font-size:0.75rem; opacity:0.7; margin-top:0.5rem; text-align:right;">1,050 points needed to unlock next tier rewards</p>
+            </div>
+          </div>
+
+          <!-- Recent Orders summary -->
+          <h3 style="font-size:1.25rem; font-weight:700; margin-bottom:1.5rem;">RECENT ATELIER ORDERS</h3>
+          <div class="order-history-list">
+            <!-- Order 1 -->
+            <div class="order-history-card">
+              <div class="order-card-header">
+                <div class="order-meta-info">
+                  <div>
+                    <span style="color:var(--gray-500); font-size:0.75rem; text-transform:uppercase;">Order Placed</span>
+                    <strong>May 12, 2026</strong>
+                  </div>
+                  <div>
+                    <span style="color:var(--gray-500); font-size:0.75rem; text-transform:uppercase;">Total Paid</span>
+                    <strong>$275.40</strong>
+                  </div>
+                  <div>
+                    <span style="color:var(--gray-500); font-size:0.75rem; text-transform:uppercase;">Order ID</span>
+                    <strong>#AU-918273</strong>
+                  </div>
+                </div>
+                <div class="order-card-status">DELIVERED</div>
+              </div>
+              <div style="font-size:0.9rem; color:var(--gray-500);">
+                Includes: <strong>Organic Oversized Tee (Cream, Size M)</strong>, <strong>Premium Oversized Hoodie (Sage, Size L)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane 2: Parcel Tracking -->
+        <div class="profile-pane" id="paneTracking">
+          <h2>PARCEL ITINERARY TRACKER</h2>
+          
+          <div class="order-history-card" style="margin-top:2.5rem;">
+            <div class="order-card-header">
+              <div class="order-meta-info">
+                <div>
+                  <span style="color:var(--gray-500); font-size:0.75rem; text-transform:uppercase;">Order ID</span>
+                  <strong>#AU-947264</strong>
+                </div>
+                <div>
+                  <span style="color:var(--gray-500); font-size:0.75rem; text-transform:uppercase;">Courier Carrier</span>
+                  <strong>DHL Express Air</strong>
+                </div>
+                <div>
+                  <span style="color:var(--gray-500); font-size:0.75rem; text-transform:uppercase;">Est. Arrival</span>
+                  <strong>May 25, 2026 (In 3 Days)</strong>
+                </div>
+              </div>
+              <div class="order-card-status" style="background-color:var(--accent-light); color:var(--accent);">IN TRANSIT</div>
+            </div>
+
+            <!-- Tracker Timeline Progress nodes -->
+            <div class="order-timeline-tracker">
+              <div class="order-timeline-progress-fill"></div>
+              
+              <!-- Step 1 -->
+              <div class="timeline-step-node complete">
+                <div class="timeline-step-circle"><i class="fa-solid fa-check"></i></div>
+                <div class="timeline-step-label">Order Placed</div>
+              </div>
+              <!-- Step 2 -->
+              <div class="timeline-step-node complete">
+                <div class="timeline-step-circle"><i class="fa-solid fa-check"></i></div>
+                <div class="timeline-step-label">Processing</div>
+              </div>
+              <!-- Step 3 -->
+              <div class="timeline-step-node active">
+                <div class="timeline-step-circle"><i class="fa-solid fa-truck"></i></div>
+                <div class="timeline-step-label">Shipped (DHL)</div>
+              </div>
+              <!-- Step 4 -->
+              <div class="timeline-step-node">
+                <div class="timeline-step-circle"><i class="fa-solid fa-house"></i></div>
+                <div class="timeline-step-label">Delivered</div>
+              </div>
+            </div>
+
+            <div style="background-color:var(--surface-muted); padding:1.5rem; border-radius:var(--radius-sm); margin-top:2rem; font-size:0.9rem; line-height:1.7;">
+              <strong style="display:block; margin-bottom:0.5rem; color:var(--primary);"><i class="fa-solid fa-circle-info"></i> LATEST CHECKPOINT REPORT</strong>
+              <span style="color:var(--gray-500);">Shipment arrived at DHL Sort Facility in Leipzig, Germany. In transit to destination hub in London.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane 3: Saved Addresses -->
+        <div class="profile-pane" id="paneSettings">
+          <h2>SAVED ADDRESS DIRECTORY</h2>
+          
+          <div class="grid-2" style="gap:2rem; margin-top:2.5rem;">
+            <!-- Address Card 1 -->
+            <div style="border:1.5px solid var(--gray-100); padding:2rem; border-radius:var(--radius-sm); position:relative;">
+              <span style="position:absolute; top:1rem; right:1rem; font-size:0.75rem; font-weight:700; color:var(--accent); background-color:var(--accent-light); padding:0.15rem 0.5rem; border-radius:var(--radius-sm);">PRIMARY</span>
+              <h4 style="font-weight:700; margin-bottom:1rem;"><i class="fa-solid fa-house"></i> Residential Address</h4>
+              <p style="font-size:0.95rem; color:var(--gray-500); line-height:1.6;">
+                John Doe<br>
+                123 Luxury Avenue, Apt 4B<br>
+                London, W1B 2EL<br>
+                United Kingdom
+              </p>
+              <button class="btn btn-secondary" style="padding:0.4rem 1rem; font-size:0.8rem; margin-top:1.5rem;">Modify Details</button>
+            </div>
+            <!-- Address Card 2 -->
+            <div style="border:1.5px solid var(--gray-100); padding:2rem; border-radius:var(--radius-sm); opacity:0.85;">
+              <h4 style="font-weight:700; margin-bottom:1rem;"><i class="fa-solid fa-briefcase"></i> Atelier Milan Flagship</h4>
+              <p style="font-size:0.95rem; color:var(--gray-500); line-height:1.6;">
+                John Doe &bull; AURA Milan VIP<br>
+                28 Via Della Spiga<br>
+                Milan, 20121<br>
+                Italy
+              </p>
+              <button class="btn btn-secondary" style="padding:0.4rem 1rem; font-size:0.8rem; margin-top:1.5rem;">Modify Details</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pane 4: My Favorites -->
+        <div class="profile-pane" id="paneFavorites">
+          <h2>MY FAVORITES</h2>
+          <div id="favoritesEmptyView" class="favorites-empty" style="display: none;">
+            <i class="fa-solid fa-heart-crack"></i>
+            <p>You haven't saved any favorites yet.</p>
+            <a href="shop.html" class="btn btn-primary">Browse The Shop</a>
+          </div>
+          <div class="grid-3" id="favoritesGrid" style="margin-top: 2.5rem; gap: 2rem;">
+            <!-- Rendered dynamically by script.js -->
+          </div>
+        </div>
+
+        <!-- Pane 5: Account Settings -->
+        <div class="profile-pane" id="paneAccountSettings">
+          <h2>ACCOUNT SETTINGS</h2>
+          
+          <div class="cart-table-card" style="max-width: 650px; margin-top: 2.5rem; border: 1.5px solid var(--gray-100); padding: 2.5rem;">
+            <form id="accountSettingsForm" novalidate style="display: flex; flex-direction: column; gap: 1.5rem;">
+              <div class="grid-2" style="gap: 1.5rem;">
+                <div class="auth-field-group" id="accFirstGroup" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <label for="accFirst" style="font-family: var(--font-heading); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: var(--gray-500);"><i class="fa-solid fa-user"></i> First Name</label>
+                  <input type="text" id="accFirst" placeholder="Jane" required style="border: 1.5px solid var(--gray-100); padding: 0.8rem 1.2rem; border-radius: var(--radius-sm); font-size: 0.95rem; width: 100%; transition: var(--transition);">
+                  <span class="auth-field-error" id="accFirstErr" style="color: #e53e3e; font-size: 0.8rem; margin-top: 0.25rem;"></span>
+                </div>
+                <div class="auth-field-group" id="accLastGroup" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <label for="accLast" style="font-family: var(--font-heading); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: var(--gray-500);">Last Name</label>
+                  <input type="text" id="accLast" placeholder="Doe" required style="border: 1.5px solid var(--gray-100); padding: 0.8rem 1.2rem; border-radius: var(--radius-sm); font-size: 0.95rem; width: 100%; transition: var(--transition);">
+                  <span class="auth-field-error" id="accLastErr" style="color: #e53e3e; font-size: 0.8rem; margin-top: 0.25rem;"></span>
+                </div>
+              </div>
+
+              <div class="auth-field-group" id="accEmailGroup" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label for="accEmail" style="font-family: var(--font-heading); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: var(--gray-500);"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                <input type="email" id="accEmail" placeholder="you@example.com" autocomplete="email" required style="border: 1.5px solid var(--gray-100); padding: 0.8rem 1.2rem; border-radius: var(--radius-sm); font-size: 0.95rem; width: 100%; transition: var(--transition);">
+                <span class="auth-field-error" id="accEmailErr" style="color: #e53e3e; font-size: 0.8rem; margin-top: 0.25rem;"></span>
+              </div>
+
+              <div class="auth-field-group" id="accPassGroup" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label for="accPass" style="font-family: var(--font-heading); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; color: var(--gray-500);"><i class="fa-solid fa-lock"></i> New Password (leave blank to keep current)</label>
+                <div class="auth-password-wrap" style="position: relative;">
+                  <input type="password" id="accPass" placeholder="••••••••" autocomplete="new-password" style="border: 1.5px solid var(--gray-100); padding: 0.8rem 1.2rem; border-radius: var(--radius-sm); font-size: 0.95rem; width: 100%; padding-right: 3rem; transition: var(--transition);">
+                  <button type="button" class="auth-eye-btn" onclick="togglePasswordVis('accPass', this)" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-500); cursor: pointer;">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                </div>
+                <span class="auth-field-error" id="accPassErr" style="color: #e53e3e; font-size: 0.8rem; margin-top: 0.25rem;"></span>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="accSubmitBtn" style="align-self: flex-start; margin-top: 1rem;">
+                <span class="auth-btn-text"><i class="fa-solid fa-save"></i> Save Changes</span>
+                <span class="auth-btn-loader" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i></span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

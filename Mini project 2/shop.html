@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop Collection | AURA WEAR Designer Catalog</title>
+  <meta name="description" content="Browse AURA WEAR premium clothing catalog. Filter by color swatches, size choices, categories, or price levels. Instant add to cart and quick checkout.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link active">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="admin.html" class="nav-link" style="color:var(--accent);">Admin</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- FILTER BACKDROP (mobile) -->
+  <div class="filter-backdrop" id="filterBackdrop"></div>
+
+  <!-- MAIN CATALOG CONTENT -->
+  <main class="container section-padding">
+    <!-- MOBILE FILTER TOGGLE BUTTON -->
+    <button class="mobile-filter-btn" id="mobileFilterBtn">
+      <i class="fa-solid fa-sliders"></i>
+      Filters
+    </button>
+
+    <div class="shop-layout">
+      <!-- SIDEBAR FILTERS -->
+      <aside class="shop-sidebar">
+        <!-- Widget 1: Search -->
+        <div class="filter-widget">
+          <h4>SEARCH TEXT</h4>
+          <div class="filter-search">
+            <input type="text" id="shopSearch" placeholder="Filter title..." autocomplete="off">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+        </div>
+
+        <!-- Widget 2: Categories -->
+        <div class="filter-widget">
+          <h4>CATEGORIES</h4>
+          <ul class="filter-links-list">
+            <li class="filter-link-item category-filter active" data-cat="All">All Items</li>
+            <li class="filter-link-item category-filter" data-cat="Suits">🕴️ Suits</li>
+            <li class="filter-link-item category-filter" data-cat="Clothes">👔 Clothes</li>
+            <li class="filter-link-item category-filter" data-cat="Shoes">👞 Shoes</li>
+            <li class="filter-link-item category-filter" data-cat="Watches">⌚ Watches</li>
+            <li class="filter-link-item category-filter" data-cat="Perfume">🧴 Perfume</li>
+            <li class="filter-link-item category-filter" data-cat="Hats">🎩 Hats</li>
+            <li class="filter-link-item category-filter" data-cat="Sunglasses">🕶️ Sunglasses</li>
+            <li class="filter-link-item category-filter" data-cat="Hair Products">💆 Hair Products</li>
+          </ul>
+        </div>
+
+        <!-- Widget 3: Colors -->
+        <div class="filter-widget">
+          <h4>COLORS</h4>
+          <div class="color-swatches-grid">
+            <div class="swatch swatch-charcoal color-swatch-filter active" data-color="All" title="All colors"></div>
+            <div class="swatch swatch-charcoal color-swatch-filter" data-color="charcoal" title="Charcoal"></div>
+            <div class="swatch swatch-terracotta color-swatch-filter" data-color="terracotta" title="Terracotta"></div>
+            <div class="swatch swatch-tan color-swatch-filter" data-color="tan" title="Tan"></div>
+            <div class="swatch color-swatch-filter" data-color="gold" title="Gold" style="background:#dfa124;"></div>
+          </div>
+        </div>
+
+        <!-- Widget 4: Sizes -->
+        <div class="filter-widget">
+          <h4>SIZES</h4>
+          <div class="size-selection-grid">
+            <div class="size-pill size-filter active" data-size="All">ALL</div>
+            <div class="size-pill size-filter" data-size="S">S</div>
+            <div class="size-pill size-filter" data-size="M">M</div>
+            <div class="size-pill size-filter" data-size="L">L</div>
+            <div class="size-pill size-filter" data-size="10">10</div>
+            <div class="size-pill size-filter" data-size="OS">OS</div>
+          </div>
+        </div>
+
+        <!-- Widget 5: Price Slider -->
+        <div class="filter-widget">
+          <h4>MAX PRICE</h4>
+          <div class="price-slider-box">
+            <input type="range" id="priceRange" class="price-slider-range" min="50" max="600" value="600" step="10">
+            <div class="price-slider-labels">
+              <span>Min: $50</span>
+              <span id="priceValue">$600</span>
+            </div>
+          </div>
+        </div>
+        <!-- Close button (mobile only) -->
+        <button class="filter-close-btn" id="filterCloseBtn">
+          <i class="fa-solid fa-xmark"></i> Close Filters
+        </button>
+      </aside>
+
+      <!-- CATALOG GRID & SORTING -->
+      <section class="shop-catalog">
+        <div class="catalog-header">
+          <div class="catalog-info">
+            Showing <span id="productsCount">0</span> premium designer pieces
+          </div>
+          <div class="catalog-sorting">
+            <label for="shopSort">Sort By:</label>
+            <select id="shopSort">
+              <option value="popularity">Popularity / Best</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Dynamic Product Grid -->
+        <div class="grid-3" id="shopGrid">
+          <!-- Populated by script.js -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Suits &amp; Blazers</a></li>
+            <li><a href="shop.html">Shoes &amp; Footwear</a></li>
+            <li><a href="shop.html">Watches &amp; Accessories</a></li>
+            <li><a href="shop.html">Perfume &amp; Hair</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

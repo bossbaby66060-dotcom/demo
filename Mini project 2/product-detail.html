@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail | AURA WEAR Signature Piece</title>
+  <meta name="description" content="View product specifications, material details, and community reviews. Choose your favorite color and size combinations.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- PRODUCT SHOWCASE LAYOUT -->
+  <main class="container section-padding">
+    <div class="detail-layout">
+      <!-- Gallery Column -->
+      <div class="gallery-box">
+        <div class="gallery-thumbs" id="detailThumbs">
+          <!-- Populated by script.js -->
+        </div>
+        <div class="gallery-main" id="detailMainIconWrap" style="background: #f3f4f6;">
+          <div class="detail-icon-panel-wrap">
+            <span class="detail-main-emoji">🛍️</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Side Column -->
+      <div class="detail-info-side">
+        <span class="detail-brand-cat" id="detailCategory">Women</span>
+        <h1 class="detail-title" id="detailTitle">Organic Oversized Tee</h1>
+        
+        <div class="detail-rating-row">
+          <div class="detail-stars" id="detailStars">
+            <!-- Dynamic stars -->
+          </div>
+          <span class="detail-reviews-num" id="detailReviewsNum">(124 reviews)</span>
+        </div>
+
+        <div class="detail-price-row" id="detailPrice">$0.00</div>
+        
+        <p class="detail-desc-snippet" id="detailSnippet">Loading description details...</p>
+
+        <!-- Dynamic choices inputs -->
+        <div class="detail-selection-box">
+          <!-- Size Selector -->
+          <div>
+            <div class="detail-select-label">SELECT SIZE <span id="selectedSizeVal">M</span></div>
+            <div class="size-selection-grid" style="grid-template-columns: repeat(5, 75px);">
+              <div class="size-pill size-pill-detail" data-size="XS">XS</div>
+              <div class="size-pill size-pill-detail" data-size="S">S</div>
+              <div class="size-pill size-pill-detail active" data-size="M">M</div>
+              <div class="size-pill size-pill-detail" data-size="L">L</div>
+              <div class="size-pill size-pill-detail" data-size="XL">XL</div>
+            </div>
+          </div>
+
+          <!-- Color Selector -->
+          <div>
+            <div class="detail-select-label">SELECT COLOR <span id="selectedColorVal">CREAM</span></div>
+            <div class="color-swatches-grid">
+              <div class="swatch swatch-cream swatch-detail active" data-color="cream"></div>
+              <div class="swatch swatch-sage swatch-detail" data-color="sage"></div>
+              <div class="swatch swatch-charcoal swatch-detail" data-color="charcoal"></div>
+              <div class="swatch swatch-tan swatch-detail" data-color="tan"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantity Adjuster & Main CTAs -->
+        <div class="detail-action-row">
+          <button class="btn btn-primary" id="detailAddToFavorites" style="width: 100%;">
+            ADD TO FAVORITES <i class="fa-solid fa-heart"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS ACCORDION SPECIFICATIONS SECTION -->
+    <section class="tabs-section">
+      <ul class="tabs-nav">
+        <li class="tab-nav-item active" data-tab="tabSpecs">DETAILS & FIT</li>
+        <li class="tab-nav-item" data-tab="tabCare">CARE GUIDE</li>
+        <li class="tab-nav-item" data-tab="tabReviews">REVIEWS</li>
+      </ul>
+
+      <!-- Pane 1: Specs -->
+      <div class="tab-pane active" id="tabSpecs">
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 800px; margin: 0 auto;">
+          <div>
+            <h4 style="margin-bottom:1rem; font-weight:700;">SPECIFICATIONS</h4>
+            <table style="width:100%; border-collapse:collapse; font-size:0.95rem;">
+              <tr style="border-bottom:1px solid var(--gray-100);">
+                <td style="padding: 0.75rem 0; color:var(--gray-500);">Composition</td>
+                <td style="padding: 0.75rem 0; text-align:right; font-weight:600;">100% Premium Organic Cotton</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--gray-100);">
+                <td style="padding: 0.75rem 0; color:var(--gray-500);">Fabric Weight</td>
+                <td style="padding: 0.75rem 0; text-align:right; font-weight:600;">Heavyweight 240 GSM Knits</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--gray-100);">
+                <td style="padding: 0.75rem 0; color:var(--gray-500);">Country of Origin</td>
+                <td style="padding: 0.75rem 0; text-align:right; font-weight:600;">Milan, Italy Atelier</td>
+              </tr>
+            </table>
+          </div>
+          <div>
+            <h4 style="margin-bottom:1rem; font-weight:700;">DESIGN NOTES</h4>
+            <p style="color:var(--gray-500); font-size:0.95rem; line-height:1.7;">Features a wide ribbed collar ribbon, dropped shoulder sleeves, reinforced shoulder-to-shoulder tape stitches, and a double-needle bottom raw hem.</p>
+            <p style="color:var(--gray-500); font-size:0.95rem; line-height:1.7; margin-top:1rem;">Designed in-house to drape elegantly off the body, conveying comfort and structural poise.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pane 2: Care -->
+      <div class="tab-pane" id="tabCare">
+        <div style="max-width:600px; margin:0 auto; font-size:0.95rem; color:var(--gray-500); line-height:1.8;">
+          <h4 style="margin-bottom:1rem; font-weight:700; color:var(--primary);">LAUNDRY MATERIAL CARE</h4>
+          <ul style="list-style:disc; padding-left:1.5rem; display:flex; flex-direction:column; gap:0.75rem;">
+            <li>Machine wash cold with like delicate colors inside out to conserve fiber texture.</li>
+            <li>Use non-chlorine mild liquid detergent to protect organic dyeing layers.</li>
+            <li>Tumble dry low or dry flat naturally in open air out of direct solar heat.</li>
+            <li>Warm iron setting on reverse side if fabric wrinkles appear.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pane 3: Reviews -->
+      <div class="tab-pane" id="tabReviews">
+        <div class="reviews-summary">
+          <div class="reviews-sum-card">
+            <h2>4.9</h2>
+            <div class="detail-stars" style="margin-bottom:0.5rem;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+            <p style="font-size:0.85rem; color:var(--gray-500);">Outstanding Quality Metric</p>
+          </div>
+          <div class="reviews-list">
+            <div class="review-item">
+              <div class="review-header">
+                <span class="review-author">Elena Rostova</span>
+                <span class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+              </div>
+              <p>The premium heavy structure of this fabric is absolutely incredible. It holds its geometric drape perfectly after washing. Standard luxury atelier grade.</p>
+            </div>
+            <div class="review-item">
+              <div class="review-header">
+                <span class="review-author">Marcello V.</span>
+                <span class="review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i></span>
+              </div>
+              <p>Excellent organic feeling and perfect relaxed styling. Highly recommend checking sizing first as it runs comfortably oversized.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RELATED SECTION -->
+    <section class="section-padding" style="border-top:1.5px solid var(--gray-100); margin-top:5rem;">
+      <div class="section-header" style="margin-bottom:3rem;">
+        <h2>COMPLEMENTARY ATELIER PIECES</h2>
+      </div>
+      <div class="grid-3" id="relatedGrid">
+        <!-- Dyn. mapped by script.js -->
+      </div>
+    </section>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

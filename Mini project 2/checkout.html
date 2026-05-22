@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secured Checkout | AURA WEAR Transaction Hub</title>
+  <meta name="description" content="Complete your premium clothing order. Secured encrypted multi-step checkout with instant delivery mapping.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- MAIN CHECKOUT SECTION -->
+  <main class="container section-padding">
+    
+    <!-- RECEIPT / ORDER PLACED VIEW (Initially Hidden) -->
+    <div id="receiptPane" style="display:none; animation: fadeInUp 0.6s ease;">
+      <div class="receipt-box">
+        <div class="receipt-icon">
+          <!-- Elegant animated green check SVG -->
+          <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="30" cy="30" r="28" stroke="#3a8250" stroke-width="3" fill="#eef7f1"/>
+            <path d="M20 30L27 37L40 22" stroke="#3a8250" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="receipt-title">ORDER TRANSACTION APPROVED</h2>
+        <p class="receipt-subtitle">Thank you for choosing luxury couture. An invoice and tracking itinerary has been transmitted to <strong id="receiptEmail">customer@aurawear.com</strong></p>
+        
+        <div class="receipt-details-table">
+          <div class="receipt-row">
+            <span>Payment Status</span>
+            <strong style="color:var(--success);">AUTHENTICATED (SSL Secured)</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Transaction ID</span>
+            <strong id="receiptOrderNo">#AU-827461</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Est. Shipping Courier</span>
+            <strong>Premium DHL Express (3-5 Days)</strong>
+          </div>
+          <div class="receipt-row" style="border-top:1px dashed var(--gray-100); padding-top:1rem; margin-top:0.5rem; font-size:1.15rem;">
+            <span>Grand Total Paid</span>
+            <strong id="receiptTotal">$0.00</strong>
+          </div>
+        </div>
+
+        <div class="receipt-reward-widget">
+          <i class="fa-solid fa-crown"></i>
+          <h3 style="font-size:1.05rem; font-weight:700; margin-bottom:0.25rem;">AURA CLUB MEMBERSHIP POINTS</h3>
+          <p style="font-size:0.85rem; color:var(--gray-500);" id="receiptPointsGained">+0 Aura Points gained on this order</p>
+        </div>
+
+        <div style="display:flex; gap:1rem; justify-content:center;">
+          <button onclick="window.print()" class="btn btn-secondary"><i class="fa-solid fa-print"></i> PRINT RECEIPT</button>
+          <a href="shop.html" class="btn btn-primary">RETURN TO SHOP</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE CHECKOUT PANES -->
+    <div class="checkout-layout">
+      <!-- Steps Column Left -->
+      <div id="checkoutStepsPane">
+        <!-- Steps Navigator -->
+        <nav class="checkout-steps-nav">
+          <div class="step-node active" id="step1">
+            <span>1</span> SHIPPING
+          </div>
+          <div class="step-node" id="step2">
+            <span>2</span> BILLING
+          </div>
+        </nav>
+
+        <!-- Pane 1: Shipping Form -->
+        <div class="checkout-pane active" id="paneShipping">
+          <h2>DELIVERY INFORMATION</h2>
+          <form id="checkoutShippingForm" onsubmit="event.preventDefault(); goToStep(2);">
+            <div class="grid-2" style="gap:1.5rem; margin-bottom:1.5rem;">
+              <div class="form-group-custom">
+                <label for="shippingFirstName">FIRST NAME</label>
+                <input type="text" id="shippingFirstName" class="form-input-styled" required placeholder="John">
+              </div>
+              <div class="form-group-custom">
+                <label for="shippingLastName">LAST NAME</label>
+                <input type="text" id="shippingLastName" class="form-input-styled" required placeholder="Doe">
+              </div>
+            </div>
+
+            <div class="form-group-custom" style="margin-bottom:1.5rem;">
+              <label for="shippingAddress">STREET ADDRESS</label>
+              <input type="text" id="shippingAddress" class="form-input-styled" required placeholder="123 Luxury Ave, Apt 4B">
+            </div>
+
+            <div class="grid-3" style="gap:1.25rem; margin-bottom:2.5rem;">
+              <div class="form-group-custom">
+                <label for="shippingCity">CITY</label>
+                <input type="text" id="shippingCity" class="form-input-styled" required placeholder="Milan">
+              </div>
+              <div class="form-group-custom">
+                <label for="shippingZip">ZIP/POSTAL CODE</label>
+                <input type="text" id="shippingZip" class="form-input-styled" required placeholder="20121">
+              </div>
+              <div class="form-group-custom">
+                <label for="shippingCountry">COUNTRY</label>
+                <input type="text" id="shippingCountry" class="form-input-styled" required placeholder="Italy">
+              </div>
+            </div>
+
+            <h2 style="margin-top:3rem;">SHIPPING COURIER</h2>
+            <div class="shipping-options-grid">
+              <!-- Option 1 -->
+              <div class="shipping-option-card active" data-cost="15">
+                <input type="radio" name="shipping_method" checked id="methodStandard">
+                <div class="shipping-option-details">
+                  <strong>Standard DHL Courier</strong>
+                  <span>Delivery timeline: 5–7 business days</span>
+                </div>
+                <div class="shipping-option-price">$15.00</div>
+              </div>
+              <!-- Option 2 -->
+              <div class="shipping-option-card" data-cost="30">
+                <input type="radio" name="shipping_method" id="methodExpress">
+                <div class="shipping-option-details">
+                  <strong>DHL Express Air Premium</strong>
+                  <span>Delivery timeline: 2–3 business days</span>
+                </div>
+                <div class="shipping-option-price">$30.00</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:2.5rem;">PROCEED TO PAYMENT <i class="fa-solid fa-credit-card"></i></button>
+          </form>
+        </div>
+
+        <!-- Pane 2: Payment Billing -->
+        <div class="checkout-pane" id="panePayment">
+          <h2>SECURED CREDIT CARD</h2>
+          
+          <!-- 3D FLIPPING CREDIT CARD MOCKUP -->
+          <div class="cc-container">
+            <div class="cc-card" id="ccCard">
+              <!-- Front Side -->
+              <div class="cc-front">
+                <div class="flex-between">
+                  <div class="cc-chip"></div>
+                  <div class="cc-logo">AURA<span>.</span></div>
+                </div>
+                <div class="cc-number" id="ccDisplayNum">•••• •••• •••• ••••</div>
+                <div class="cc-bottom-row">
+                  <div>
+                    <div style="font-size:0.55rem; opacity:0.75; margin-bottom:0.15rem;">Cardholder</div>
+                    <div class="cc-holder-name" id="ccDisplayName">CARDHOLDER NAME</div>
+                  </div>
+                  <div>
+                    <div style="font-size:0.55rem; opacity:0.75; margin-bottom:0.15rem;">Expires</div>
+                    <div class="cc-holder-name" id="ccDisplayExpiry">MM/YY</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Back Side -->
+              <div class="cc-back">
+                <div class="cc-magnetic-strip"></div>
+                <div class="cc-sig-bar">
+                  <span id="ccDisplayCvv">•••</span>
+                </div>
+                <div class="cc-sig-text">Authorized Signature • Not Transferable</div>
+                <div style="padding: 1.5rem; text-align:right; font-size:0.75rem; opacity:0.6;">AURA WEAR ATELIER MILANO</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Form -->
+          <form id="checkoutPaymentForm">
+            <div class="form-group-custom" style="margin-bottom:1.5rem;">
+              <label for="billingEmail">RECEIPT NOTIFICATION EMAIL</label>
+              <input type="email" id="billingEmail" class="form-input-styled" required placeholder="customer@aurawear.com">
+            </div>
+
+            <div class="form-group-custom" style="margin-bottom:1.5rem;">
+              <label for="ccNameInput">NAME ON CREDIT CARD</label>
+              <input type="text" id="ccNameInput" class="form-input-styled" required placeholder="JOHN DOE" autocomplete="off">
+            </div>
+
+            <div class="form-group-custom" style="margin-bottom:1.5rem;">
+              <label for="ccNumberInput">CREDIT CARD NUMBER</label>
+              <input type="text" id="ccNumberInput" class="form-input-styled" required placeholder="4111 2222 3333 4444" maxlength="19" autocomplete="off">
+            </div>
+
+            <div class="grid-2" style="gap:1.5rem; margin-bottom:2.5rem;">
+              <div class="form-group-custom">
+                <label for="ccExpiryInput">EXPIRY DATE</label>
+                <input type="text" id="ccExpiryInput" class="form-input-styled" required placeholder="MM/YY" maxlength="5" autocomplete="off">
+              </div>
+              <div class="form-group-custom">
+                <label for="ccCvvInput">SECURITY CODE (CVV)</label>
+                <input type="password" id="ccCvvInput" class="form-input-styled" required placeholder="•••" maxlength="3" autocomplete="off">
+              </div>
+            </div>
+
+            <div style="display:flex; gap:1.5rem;">
+              <button type="button" class="btn btn-secondary" onclick="goToStep(1)">BACK TO SHIPPING</button>
+              <button type="submit" class="btn btn-accent" style="flex:1;">TRANSMIT SECURE ORDER ($) <i class="fa-solid fa-lock"></i></button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Order Summary Column -->
+      <div class="order-summary-card" id="checkoutSummaryColumn">
+        <h3>YOUR ORDER</h3>
+        
+        <div id="checkoutSummaryItems" style="display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem; max-height: 250px; overflow-y: auto;">
+          <!-- Inline listed items pop. by script.js -->
+        </div>
+
+        <div class="summary-row">
+          <span>Item Subtotal</span>
+          <span id="checkoutSubtotal">$0.00</span>
+        </div>
+        <div class="summary-row" id="checkoutDiscountRow" style="display:none; color: var(--success); font-weight: 600;">
+          <span>Promotional Discount</span>
+          <span id="checkoutDiscount">-$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated Shipping</span>
+          <span id="checkoutShipping">$0.00</span>
+        </div>
+        <div class="summary-row">
+          <span>Estimated Sales Tax (8%)</span>
+          <span id="checkoutTax">$0.00</span>
+        </div>
+        
+        <div class="summary-row total-row">
+          <span>GRAND TOTAL</span>
+          <span id="checkoutTotal">$0.00</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

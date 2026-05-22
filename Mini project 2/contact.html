@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | AURA WEAR Concierge & Support</title>
+  <meta name="description" content="Reach the AURA WEAR concierge. Connect with our Milan design flagship, customer support desk, press department, or retail showroom.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- GLOBAL PREMIUM NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="container flex-between">
+      <a href="index.html" class="navbar-brand">
+        AURA<span>.</span>
+      </a>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="about.html" class="nav-link">Our Story</a></li>
+        <li><a href="contact.html" class="nav-link active">Contact</a></li>
+      </ul>
+
+      <div class="navbar-actions">
+        <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
+        <a href="profile.html" class="action-btn">
+          <i class="fa-solid fa-heart"></i>
+          <span class="badge-count" id="wishlistCount">0</span>
+        </a>
+        <a href="#" class="action-btn" id="cartToggle">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="badge-count" id="cartCount">0</span>
+        </a>
+        <a href="profile.html" class="action-btn navbar-user-btn"><i class="fa-solid fa-user"></i></a>
+        <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay-close" id="closeSearch"><i class="fa-solid fa-xmark"></i></div>
+    <div class="search-container">
+      <h2>SEARCH THE CATALOG</h2>
+      <div class="search-input-group">
+        <input type="text" id="globalSearchInput" placeholder="Type keyword and press Enter..." autocomplete="off">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OUT SIDEBAR CART -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-sidebar-header">
+      <h3>YOUR CART</h3>
+      <div class="close-cart-btn" id="closeCart"><i class="fa-solid fa-xmark"></i></div>
+    </div>
+    <div class="cart-sidebar-body" id="sidebarCartItems"></div>
+    <div class="cart-sidebar-footer">
+      <div class="cart-total-row">
+        <span>SUBTOTAL</span>
+        <span id="sidebarCartTotal">$0.00</span>
+      </div>
+      <div class="cart-sidebar-actions">
+        <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
+        <a href="checkout.html" class="btn btn-primary">CHECKOUT NOW</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLUR BACKDROP OVERLAY -->
+  <div class="overlay" id="sidebarOverlay"></div>
+
+  <!-- EDITORIAL HERO -->
+  <header class="editorial-hero">
+    <div class="container">
+      <span class="editorial-label">AURA CONCIERGE</span>
+      <h1>WE ARE HERE TO HELP</h1>
+      <p>Connect with our client services desk, request tailor appointments, or track shipments.</p>
+    </div>
+  </header>
+
+  <main class="container section-padding">
+    <div class="contact-grid">
+      <!-- Info Sidebar -->
+      <div class="contact-card-sidebar">
+        <!-- Box 1 -->
+        <div class="contact-detail-box">
+          <h3>THE FLAGSHIP</h3>
+          <ul class="contact-detail-list">
+            <li class="contact-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <div>
+                <strong>Atelier Location</strong>
+                28 Via Della Spiga, 20121 Milano MI, Italy
+              </div>
+            </li>
+            <li class="contact-item">
+              <i class="fa-solid fa-phone"></i>
+              <div>
+                <strong>Telephone Booking</strong>
+                +39 02 8765 4321
+              </div>
+            </li>
+            <li class="contact-item">
+              <i class="fa-solid fa-clock"></i>
+              <div>
+                <strong>Operational Hours</strong>
+                Monday – Saturday: 10:00 AM – 7:00 PM<br>
+                Sunday: Private Bookings Only
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Box 2 -->
+        <div class="contact-detail-box">
+          <h3>DIGITAL SUPPORT</h3>
+          <ul class="contact-detail-list">
+            <li class="contact-item">
+              <i class="fa-solid fa-envelope"></i>
+              <div>
+                <strong>Customer Assistance</strong>
+                concierge@aurawear.com
+              </div>
+            </li>
+            <li class="contact-item">
+              <i class="fa-solid fa-handshake"></i>
+              <div>
+                <strong>Press & Wholesalers</strong>
+                relations@aurawear.com
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form-card">
+        <h2>SEND US A MESSAGE</h2>
+        <form id="contactForm">
+          <div class="grid-2" style="gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="form-group-custom">
+              <label for="contactName">YOUR NAME</label>
+              <input type="text" id="contactName" class="form-input-styled" required placeholder="John Doe">
+            </div>
+            <div class="form-group-custom">
+              <label for="contactEmail">EMAIL ADDRESS</label>
+              <input type="email" id="contactEmail" class="form-input-styled" required placeholder="example@email.com">
+            </div>
+          </div>
+          
+          <div class="form-group-custom">
+            <label for="contactOrder">ORDER NUMBER (OPTIONAL)</label>
+            <input type="text" id="contactOrder" class="form-input-styled" placeholder="#AU-XXXXXX">
+          </div>
+
+          <div class="form-group-custom" style="margin-bottom: 2rem;">
+            <label for="contactMsg">YOUR ENQUIRY</label>
+            <textarea id="contactMsg" class="form-input-styled" rows="6" required placeholder="Describe your request in detail..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100-mt-1" style="width: 100%;">TRANSMIT ENQUIRY <i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+
+    <!-- MAP INTERACTIVE PLACEHOLDER -->
+    <div class="map-placeholder-frame">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2797.747970712959!2d9.195029376916538!3d45.474880532724495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4786c6b840134f59%3A0xe54e60ea91054dfc!2sVia%20della%20Spiga%2C%20Milano%20MI%2C%20Italy!5e0!3m2!1sen!2sus!4v1716382000000!5m2!1sen!2sus" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </main>
+
+  <!-- BRAND PREMIUM FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid-4" style="gap: 3rem;">
+        <div>
+          <div class="footer-brand">
+            <h2>AURA<span>.</span></h2>
+          </div>
+          <p class="footer-desc">Crafting organic luxury minimalist couture, sustainable essentials, and architectural design elements for the contemporary lifestyle.</p>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-pinterest"></i></a>
+            <a href="#" class="social-icon"><i class="fa-brands fa-tiktok"></i></a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="footer-heading">COLLECTIONS</h3>
+          <ul class="footer-links">
+            <li><a href="shop.html">Women's Couture</a></li>
+            <li><a href="shop.html">Men's Essentials</a></li>
+            <li><a href="shop.html">Seasonal Knits</a></li>
+            <li><a href="shop.html">New Arrivals</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">CUSTOMER SERVICE</h3>
+          <ul class="footer-links">
+            <li><a href="contact.html">Support Desk</a></li>
+            <li><a href="about.html">Brand Heritage</a></li>
+            <li><a href="profile.html">Order Status</a></li>
+            <li><a href="contact.html">Return Portal</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="footer-heading">THE ATELIER</h3>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Retail Flagship</strong>
+              28 Via Della Spiga, Milan, Italy
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+              <strong>Press & Inquiries</strong>
+              concierge@aurawear.com
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2026 AURA WEAR. All rights reserved. Elegant design & sustainable couture.</p>
+        <p>Milano &bull; New York &bull; Tokyo</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
