@@ -27,7 +27,7 @@
 
       <div class="navbar-actions">
         <a href="#" class="action-btn" id="searchToggle"><i class="fa-solid fa-magnifying-glass"></i></a>
-        <a href="profile.html" class="action-btn">
+        <a href="profile.html#paneFavorites" class="action-btn">
           <i class="fa-solid fa-heart"></i>
           <span class="badge-count" id="wishlistCount">0</span>
         </a>
@@ -63,7 +63,7 @@
     <div class="cart-sidebar-footer">
       <div class="cart-total-row">
         <span>SUBTOTAL</span>
-        <span id="sidebarCartTotal">$0.00</span>
+        <span id="sidebarCartTotal">Br 0.00</span>
       </div>
       <div class="cart-sidebar-actions">
         <a href="cart.html" class="btn btn-secondary">VIEW CART</a>
@@ -106,7 +106,7 @@
           </div>
           <div class="receipt-row" style="border-top:1px dashed var(--gray-100); padding-top:1rem; margin-top:0.5rem; font-size:1.15rem;">
             <span>Grand Total Paid</span>
-            <strong id="receiptTotal">$0.00</strong>
+            <strong id="receiptTotal">Br 0.00</strong>
           </div>
         </div>
 
@@ -181,7 +181,7 @@
                   <strong>Standard DHL Courier</strong>
                   <span>Delivery timeline: 5–7 business days</span>
                 </div>
-                <div class="shipping-option-price">$15.00</div>
+                <div class="shipping-option-price">Br 15.00</div>
               </div>
               <!-- Option 2 -->
               <div class="shipping-option-card" data-cost="30">
@@ -190,7 +190,7 @@
                   <strong>DHL Express Air Premium</strong>
                   <span>Delivery timeline: 2–3 business days</span>
                 </div>
-                <div class="shipping-option-price">$30.00</div>
+                <div class="shipping-option-price">Br 30.00</div>
               </div>
             </div>
 
@@ -265,7 +265,7 @@
 
             <div style="display:flex; gap:1.5rem;">
               <button type="button" class="btn btn-secondary" onclick="goToStep(1)">BACK TO SHIPPING</button>
-              <button type="submit" class="btn btn-accent" style="flex:1;">TRANSMIT SECURE ORDER ($) <i class="fa-solid fa-lock"></i></button>
+              <button type="submit" class="btn btn-accent" style="flex:1;">TRANSMIT SECURE ORDER (Br) <i class="fa-solid fa-lock"></i></button>
             </div>
           </form>
         </div>
@@ -281,24 +281,24 @@
 
         <div class="summary-row">
           <span>Item Subtotal</span>
-          <span id="checkoutSubtotal">$0.00</span>
+          <span id="checkoutSubtotal">Br 0.00</span>
         </div>
         <div class="summary-row" id="checkoutDiscountRow" style="display:none; color: var(--success); font-weight: 600;">
           <span>Promotional Discount</span>
-          <span id="checkoutDiscount">-$0.00</span>
+          <span id="checkoutDiscount">-Br 0.00</span>
         </div>
         <div class="summary-row">
           <span>Estimated Shipping</span>
-          <span id="checkoutShipping">$0.00</span>
+          <span id="checkoutShipping">Br 0.00</span>
         </div>
         <div class="summary-row">
           <span>Estimated Sales Tax (8%)</span>
-          <span id="checkoutTax">$0.00</span>
+          <span id="checkoutTax">Br 0.00</span>
         </div>
         
         <div class="summary-row total-row">
           <span>GRAND TOTAL</span>
-          <span id="checkoutTotal">$0.00</span>
+          <span id="checkoutTotal">Br 0.00</span>
         </div>
       </div>
     </div>

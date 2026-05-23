@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Update currency in index.html",
+			"type": "shell",
+			"command": "echo 'updating index.html'",
+			"isBackground": false
+		}
+	]
+}

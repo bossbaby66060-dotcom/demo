@@ -138,6 +138,117 @@ function getStoreCategories() {
   return defaultCategories;
 }
 
+/* ==========================================
+   SEARCH HISTORY & RECOMMENDATION HELPERS
+   ========================================== */
+function saveSearchHistory(query) {
+  if (!query) return;
+  try {
+    const key = 'aura_search_history';
+    const raw = JSON.parse(localStorage.getItem(key)) || [];
+    // normalize and dedupe
+    const normalized = query.trim().toLowerCase();
+    const filtered = raw.filter(q => q !== normalized);
+    filtered.unshift(normalized);
+    const limited = filtered.slice(0, 10);
+    localStorage.setItem(key, JSON.stringify(limited));
+  } catch (e) {}
+}
+
+function getSearchHistory() {
+  try {
+    return JSON.parse(localStorage.getItem('aura_search_history')) || [];
+  } catch (e) { return []; }
+}
+
+function getLastSearch() {
+  const hist = getSearchHistory();
+  return hist.length ? hist[0] : null;
+}
+
+function renderRecommendedSection() {
+  const recommendedGrid = document.getElementById('recommendedGrid');
+  const recCount = document.getElementById('recBannerCount');
+  if (!recommendedGrid) return;
+
+  const last = getLastSearch();
+  let results = [];
+  if (last) {
+    const q = last.toLowerCase();
+    results = products.filter(p => (
+      (p.title && p.title.toLowerCase().includes(q)) ||
+      (p.description && p.description.toLowerCase().includes(q)) ||
+      (p.category && p.category.toLowerCase().includes(q))
+    ));
+  }
+
+  if (!results.length) {
+    // fallback: show most popular items
+    results = [...products].sort((a,b) => b.popularity - a.popularity).slice(0,4);
+  }
+
+  recCount && (recCount.textContent = results.length);
+  recommendedGrid.innerHTML = `
+    <div class="rec-scroll">
+      ${results.slice(0,6).map(p => `
+        <a class="rec-item" href="product-detail.html?id=${p.id}">
+          <div class="rec-thumb" style="background:${p.iconBg};">${p.icon}</div>
+          <div class="rec-meta"><strong>${p.title}</strong><span>${p.category}</span></div>
+        </a>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderDashboardBanners() {
+  // Favorites banner preview
+  const favPreview = document.getElementById('favPreview');
+  const favCountEl = document.getElementById('favBannerCount');
+  const sbFavsCount = document.getElementById('sbFavsCount');
+  const sbRecCount = document.getElementById('sbRecCount');
+  const sbNotifCount = document.getElementById('sbNotifCount');
+
+  const savedProducts = products.filter(p => wishlist.includes(p.id)).slice(0,4);
+  const favCount = wishlist.length;
+  favCountEl && (favCountEl.textContent = favCount);
+  sbFavsCount && (sbFavsCount.textContent = favCount);
+
+  if (favPreview) {
+    if (!savedProducts.length) {
+      favPreview.innerHTML = `<div class="fav-empty">No favorites yet.</div>`;
+    } else {
+      favPreview.innerHTML = savedProducts.map(p => `
+        <a class="fav-thumb" href="product-detail.html?id=${p.id}">
+          ${p.image ? `<img src="${p.image}" alt="${p.title}"/>` : `<div style=\"background:${p.iconBg};\">${p.icon}</div>`}
+        </a>
+      `).join('');
+    }
+  }
+
+  // Notifications
+  const notifs = JSON.parse(localStorage.getItem('aura_notifications') || '[]');
+  const notifCount = Array.isArray(notifs) ? notifs.length : 0;
+  const notifList = document.getElementById('notificationsList');
+  const notifBannerCount = document.getElementById('notifBannerCount');
+  sbNotifCount && (sbNotifCount.textContent = notifCount);
+  notifBannerCount && (notifBannerCount.textContent = notifCount);
+  if (notifList) {
+    if (!notifCount) {
+      notifList.innerHTML = `<div class="notif-empty">You're all caught up.</div>`;
+    } else {
+      notifList.innerHTML = notifs.slice(0,4).map(n => `<div class="notif-item">${n}</div>`).join('');
+    }
+  }
+
+  // Sidebar recommended count (based on last search or fallback)
+  const last = getLastSearch();
+  const recEst = last ? products.filter(p => (p.title + p.description + p.category).toLowerCase().includes(last)).length : 0;
+  sbRecCount && (sbRecCount.textContent = recEst || products.length);
+
+  // ensure recommended section rendered
+  renderRecommendedSection();
+}
+
 // Document Ready Initializations
 document.addEventListener("DOMContentLoaded", () => {
   initGlobalUI();
@@ -290,6 +401,8 @@ function initGlobalUI() {
         const query = e.target.value.trim();
         if (query) {
           sessionStorage.setItem("search_query", query);
+          // persist search history for recommendations
+          try { saveSearchHistory(query); } catch (err) {}
           searchOverlay.classList.remove("active");
           window.location.href = "shop.html";
         }
@@ -488,7 +601,7 @@ function renderSidebarCart() {
         <p>Your shopping cart is empty</p>
       </div>
     `;
-    cartTotal.textContent = "$0.00";
+    cartTotal.textContent = "Br 0.00";
     return;
   }
 
@@ -730,7 +843,7 @@ function initShopPage() {
   if (priceRange && priceValue) {
     priceRange.addEventListener("input", (e) => {
       maxPrice = parseFloat(e.target.value);
-      priceValue.textContent = `$${maxPrice}`;
+      priceValue.textContent = `Br ${maxPrice}`;
       applyFilters();
     });
   }
@@ -1076,7 +1189,7 @@ function renderCartPageItems() {
 
   tableBody.innerHTML = html;
 
-  // Shipping progress math (Free shipping over $150)
+  // Shipping progress math (Free shipping over Br 150)
   const freeShippingThreshold = 150.00;
   let shippingCost = 15.00;
   
@@ -1165,7 +1278,7 @@ function initCheckoutPage() {
             <strong>${item.title}</strong> x ${item.quantity}
             <span style="display:block; color:var(--gray-500); font-size:0.75rem;">Size: ${item.size} | Color: ${item.color}</span>
           </div>
-          <span>$${(item.price * item.quantity).toFixed(2)}</span>
+          <span>Br ${(item.price * item.quantity).toFixed(2)}</span>
         </div>
       `;
     });
@@ -1664,6 +1777,46 @@ function initProfilePage() {
 
   // Render favorites grid
   renderFavoritesGrid();
+  // Render dashboard banners & recommended items
+  renderDashboardBanners();
+
+  // Sidebar banner quick actions
+  const sbFavs = document.getElementById('sbFavs');
+  const sbRec = document.getElementById('sbRec');
+  const sbNotif = document.getElementById('sbNotif');
+  if (sbFavs) sbFavs.addEventListener('click', () => {
+    document.querySelectorAll('.profile-menu-item').forEach(i => i.classList.remove('active'));
+    const favBtn = document.querySelector('.profile-menu-item[data-pane="paneFavorites"]');
+    if (favBtn) { favBtn.classList.add('active'); document.getElementById('paneFavorites').classList.add('active'); }
+  });
+  if (sbRec) sbRec.addEventListener('click', () => {
+    // ensure dashboard pane visible then scroll to recommended
+    document.querySelectorAll('.profile-menu-item').forEach(i => i.classList.remove('active'));
+    const dashBtn = document.querySelector('.profile-menu-item[data-pane="paneDashboard"]');
+    if (dashBtn) { dashBtn.classList.add('active'); document.getElementById('paneDashboard').classList.add('active'); }
+    setTimeout(() => { document.getElementById('recommendedGrid')?.scrollIntoView({behavior:'smooth', block:'center'}); }, 250);
+  });
+  if (sbNotif) sbNotif.addEventListener('click', () => {
+    document.querySelectorAll('.profile-menu-item').forEach(i => i.classList.remove('active'));
+    const dashBtn = document.querySelector('.profile-menu-item[data-pane="paneDashboard"]');
+    if (dashBtn) { dashBtn.classList.add('active'); document.getElementById('paneDashboard').classList.add('active'); }
+    setTimeout(() => { document.getElementById('notificationsList')?.scrollIntoView({behavior:'smooth', block:'center'}); }, 250);
+  });
+
+  // Activate pane from URL hash if present (e.g. profile.html#paneFavorites)
+  const hash = window.location.hash;
+  if (hash) {
+    const paneId = hash.replace('#', '');
+    const targetPane = document.getElementById(paneId);
+    if (targetPane) {
+      profileMenuLinks.forEach(l => l.classList.remove('active'));
+      profilePanes.forEach(p => p.classList.remove('active'));
+      const menuItem = document.querySelector(`.profile-menu-item[data-pane="${paneId}"]`);
+      if (menuItem) menuItem.classList.add('active');
+      targetPane.classList.add('active');
+      setTimeout(() => { targetPane.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 80);
+    }
+  }
 
   // ── Account Settings Form handler ─────────────────────────────
   const accForm = document.getElementById("accountSettingsForm");
